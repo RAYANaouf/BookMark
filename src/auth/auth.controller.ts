@@ -14,6 +14,7 @@ export class AuthController{
         return this.authService.signup()
     }
 
+    
     @Post("/login")
     login(){
         return this.authService.login()
