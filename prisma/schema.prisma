@@ -27,22 +27,20 @@ model User{
 
   Bookmarks Bookmark[]
 
-  @@map("users")
 }
 
 
 
 model Bookmark{
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   title        String
   description  String?
   link         String
 
-  userId Int
+  userId       Int
   user User @relation(fields: [userId], references: [id])
 
-  @@map("Bookmarks")
 }
