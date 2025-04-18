@@ -11,10 +11,10 @@ export class AuthController{
         console.log({
             dto : authDto
         })
-        return this.authService.signup()
+        return this.authService.signup(authDto)
     }
 
-    
+
     @Post("/login")
     login(){
         return this.authService.login()
