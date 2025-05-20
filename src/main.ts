@@ -44,7 +44,7 @@ async function bootstrap() {
           clientEmail : process.env.FIREBASE_CLIENT_EMAIL,
           projectId : process.env.FIREBASE_PROJECT_ID
         } as Partial<firebaseAdmin.ServiceAccount>),
-        storageBucket : process.env.FIREBASE_PROJECT_ID + '.appspot.com'
+        storageBucket : process.env.FIREBASE_STORAGE_BUCKET
       })
 
       console.log("✅ Firebase Admin initialized");
