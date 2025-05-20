@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, UploadedFile, UseInte
 import { AcademyService } from './academy.service';
 import { AcademyDto, CreateAcademyDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller('academy')
 export class AcademyController {
@@ -23,12 +24,13 @@ export class AcademyController {
         @Post("create")
         @UseInterceptors(
             FileInterceptor("logo",{
-                dest : "./uploads/academies"
+                storage : memoryStorage(), //in-memory buffer
+                limits : {fileSize: 5/ 1024 * 1024 } //5MB limit
             })
         )
         createAcademy(
             @Body() academy : CreateAcademyDto,
-            @UploadedFile() file?
+            @UploadedFile() file? 
         ){
             console.log("===========>  ",file)
             return this.academyService.createAcademy(academy)
