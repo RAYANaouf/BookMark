@@ -68,12 +68,14 @@ export class AcademyController {
                         resolve(null)
                     })
 
-
+                    stream.end(file.buffer)
                     
                 })
                 
             }
-            return this.academyService.createAcademy(academy)
+
+            
+            return this.academyService.createAcademy(academy , logoUrl)
         }
 
 }
