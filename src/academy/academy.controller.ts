@@ -25,7 +25,7 @@ export class AcademyController {
         @UseInterceptors(
             FileInterceptor("logo",{
                 storage : memoryStorage(), //in-memory buffer
-                limits : {fileSize: 5/ 1024 * 1024 } //5MB limit
+                limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
             })
         )
         createAcademy(
