@@ -14,11 +14,11 @@ export class AcademyService {
         return this.prisma.academy.findMany()
     }
 
-    createAcademy(academy : CreateAcademyDto){
+    createAcademy(academy : CreateAcademyDto , logoUrl : string | null){
         return this.prisma.academy.create({
             data : {
                 name     : academy.name,
-                logo     : academy.logo || ""
+                logo     : logoUrl || ""
             }
         })
     }
