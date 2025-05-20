@@ -1,0 +1,219 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output        = "../node_modules/.prisma/client"
+  binaryTargets = ["debian-openssl-3.0.x", "windows"]
+}
+
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  hash      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user      User?
+}
+
+
+
+
+model User{
+  id Int @id @default(autoincrement())
+  accountId Int 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  firstName String  @default("")
+  lastName  String  @default("")
+
+
+  isAcademy    Boolean @default(false)
+  isStudent    Boolean @default(false)
+  isParent     Boolean @default(false)
+  isTeacher    Boolean @default(false)
+  isSuperAdmin Boolean @default(false)
+  
+  student      Student? 
+  parent       Parent? 
+  teacher      Teacher? 
+  superAdmin   SuperAdmin?
+
+  account Account @relation(fields: [accountId], references: [id])
+  @@unique([accountId])
+}
+
+
+model SuperAdmin{
+  id Int @id @default(autoincrement())
+  userId Int 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User @relation(fields: [userId], references: [id])
+  @@unique([userId])
+}
+
+model Student{
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int 
+  user User @relation(fields: [userId], references: [id])
+
+  groups  Group[]
+  parents Parent[]
+
+  @@unique([userId])
+}
+
+model Parent{
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int 
+  user  User @relation(fields: [userId], references: [id])
+
+  students Student[]
+
+  @@unique([userId])
+}
+model Teacher{
+  id Int @id @default(autoincrement())
+  userId Int 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  @@unique([userId])
+
+
+  seances Seance[]
+}
+
+
+
+
+
+
+
+
+model Module{
+  id      Int @id @default(autoincrement())
+  name    String
+  year    Int
+  branch  String
+  type    String
+
+  academies Academy[]
+
+  groups Group[]
+}
+
+
+
+
+model Support{
+  id      Int @id @default(autoincrement())
+  title   String
+  url     String
+  type    String
+  seances Seance[]
+}
+
+model Seance{
+  id     Int @id @default(autoincrement())
+  date   DateTime
+  start  DateTime
+  end    DateTime
+
+
+  groupId Int
+  group Group @relation(fields: [groupId], references: [id])
+
+  teacherId Int
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  supports Support[]
+}
+
+model Group{
+  id     Int @id @default(autoincrement())
+  name   String
+
+  moduleId Int
+  module Module @relation(fields: [moduleId], references: [id])
+
+  students Student[]
+  seances  Seance[]
+  exams    Exam[]
+
+}
+
+model Exam{
+  id       Int @id @default(autoincrement())
+  name     String
+  date     DateTime
+  duration Int
+
+  groupId  Int
+  group    Group @relation(fields: [groupId], references: [id])
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+model Academy{
+  id         Int @id @default(autoincrement())
+  name       String
+  logo       String?
+  phone      String?
+  email      String?
+
+  modules Module[]
+
+}
+
