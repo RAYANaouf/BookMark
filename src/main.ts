@@ -30,15 +30,22 @@ async function bootstrap() {
   //firebase admin
 
   if(firebaseAdmin.apps.length === 0){
-    console.log("Firebase Admin is not initialized")
-    firebaseAdmin.initializeApp({
-      credential : firebaseAdmin.credential.cert({
-        privateKey : process.env.FIREBASE_PRIVATE_KEY,
-        clientEmail : process.env.FIREBASE_CLIENT_EMAIL,
-        projectId : process.env.FIREBASE_PROJECT_ID
-      } as Partial<firebaseAdmin.ServiceAccount>),
-      databaseURL : process.env.FIREBASE_DATABASE_URL
-    })
+    console.log("Initializing Firebase Admin...");
+    
+    try{
+      firebaseAdmin.initializeApp({
+        credential : firebaseAdmin.credential.cert({
+          privateKey : process.env.FIREBASE_PRIVATE_KEY,
+          clientEmail : process.env.FIREBASE_CLIENT_EMAIL,
+          projectId : process.env.FIREBASE_PROJECT_ID
+        } as Partial<firebaseAdmin.ServiceAccount>),
+        databaseURL : process.env.FIREBASE_DATABASE_URL
+      })
+
+      console.log("✅ Firebase Admin initialized");
+    }catch(error){
+      console.error("❌ Firebase Admin failed to initialize:", error);
+    }
   }
   
 
