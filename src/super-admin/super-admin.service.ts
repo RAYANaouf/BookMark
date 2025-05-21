@@ -45,10 +45,28 @@ export class SuperAdminService {
         const res = await this.prisma.superAdmin.findUnique({
             where : {
                 id : id
+            },
+            include : {
+                user : {
+                    select : {
+                        firstName : true ,
+                        lastName  : true ,
+                        profilePhoto : true
+                    }
+                }
             }
         })
         console.log("res : " , res)
-        return res
+        return {
+            
+            id : res?.id,
+            userId : res?.userId,
+            createdAt : res?.createdAt,
+            updatedAt : res?.updatedAt,
+            firstName : res?.user?.firstName,
+            lastName : res?.user?.lastName,
+            profilePhoto : res?.user?.profilePhoto
+        }
     }
     
 
