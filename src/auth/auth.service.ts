@@ -66,7 +66,7 @@ export class AuthService{
         return this.signTocken(user.id , user.email)
     }
 
-    async createSuperAdmin(createSuperAdminDto: CreateSuperAdminDto) {
+    async createSuperAdmin(createSuperAdminDto: CreateSuperAdminDto , photoProfileUrl : string | null) {
 
         console.log('📥 Received CreateSuperAdminDto:', createSuperAdminDto); // Log the full request body
         

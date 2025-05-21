@@ -43,6 +43,7 @@ model User{
 
   firstName String  @default("")
   lastName  String  @default("")
+  profilePhoto String? @default("")
 
 
   isAcademy    Boolean @default(false)

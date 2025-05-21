@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AcademyService } from './academy.service';
 import { AcademyDto, CreateAcademyDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -25,6 +25,8 @@ export class AcademyController {
             return this.academyService.getAcademyById(id)
         }
 
+        
+        @HttpCode(HttpStatus.CREATED)
         @Post("create")
         @UseInterceptors(
             FileInterceptor("logo",{
@@ -32,7 +34,6 @@ export class AcademyController {
                 limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
             })
         )
-
         async createAcademy(
             @Body() academy : CreateAcademyDto,
             @UploadedFile() file? 
