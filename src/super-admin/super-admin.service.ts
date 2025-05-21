@@ -40,6 +40,15 @@ export class SuperAdminService {
     }
 
 
+    //@UseGuards(JwtGuard)
+    async getSuperAdminById(id : number){
+        return this.prisma.superAdmin.findUnique({
+            where : {
+                id : id
+            }
+        })
+    }
+    
 
 
 
