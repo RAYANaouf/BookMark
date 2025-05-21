@@ -88,6 +88,7 @@ export class AuthService{
                         isSuperAdmin: true,
                         firstName : createSuperAdminDto.firstName ?? "empty",
                         lastName : createSuperAdminDto.lastName ?? "empty",
+                        profilePhoto : photoProfileUrl ?? "",
                         superAdmin : {
                             create : {}
                         }
