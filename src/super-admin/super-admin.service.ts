@@ -42,11 +42,13 @@ export class SuperAdminService {
 
     //@UseGuards(JwtGuard)
     async getSuperAdminById(id : number){
-        return this.prisma.superAdmin.findUnique({
+        const res = await this.prisma.superAdmin.findUnique({
             where : {
                 id : id
             }
         })
+        console.log("res : " , res)
+        return res
     }
     
 
