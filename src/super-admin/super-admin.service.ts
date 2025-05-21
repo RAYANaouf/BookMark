@@ -33,6 +33,9 @@ export class SuperAdminService {
                 profilePhoto : superAdmin.user.profilePhoto
             }
         })
+
+        console.log("formattedList",formattedList)
+        
         return { "superAdminList" : formattedList}
     }
 
