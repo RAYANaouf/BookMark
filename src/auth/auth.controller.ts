@@ -40,7 +40,7 @@ export class AuthController{
         @UploadedFile() file?
     ){
         console.log("===========>  ",file)
-        let photoProfileUrl : string | null = null
+        let photoProfileUrl : string = ""
         if(file){
             const fileName = 'super_admin/profile_photo/' + uuidv4() + extname(file.originalname)
 
