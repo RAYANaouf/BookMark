@@ -15,7 +15,8 @@ export class SuperAdminService {
                 user : {
                     select : {
                         firstName : true ,
-                        lastName  : true
+                        lastName  : true ,
+                        profilePhoto : true
                     }
                 }
             }
@@ -28,7 +29,8 @@ export class SuperAdminService {
                 createdAt : superAdmin.createdAt,
                 updatedAt : superAdmin.updatedAt,
                 firstName : superAdmin.user.firstName,
-                lastName : superAdmin.user.lastName
+                lastName : superAdmin.user.lastName,
+                profilePhoto : superAdmin.user.profilePhoto
             }
         })
         return { "superAdminList" : formattedList}
