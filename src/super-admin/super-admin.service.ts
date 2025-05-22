@@ -68,6 +68,41 @@ export class SuperAdminService {
             profilePhoto : res?.user?.profilePhoto
         }
     }
+
+
+
+    async deleteSuperAdmin(id: number): Promise<boolean> {
+        try {
+            const superAdmin = await this.prisma.superAdmin.findUnique({
+                where: { id },
+                include: {
+                    user: {
+                        include: {
+                            account: true,
+                        },
+                    },
+                },
+            });
+    
+            if (!superAdmin) return false;
+    
+            const userId = superAdmin.userId;
+            const accountId = superAdmin.user.accountId;
+    
+            // ⚠️ Transaction: All delete operations must succeed or all fail
+            await this.prisma.$transaction([
+                // Delete in order: SuperAdmin → User → Account
+                this.prisma.superAdmin.delete({ where: { id } }),
+                this.prisma.user.delete({ where: { id: userId } }),
+                this.prisma.account.delete({ where: { id: accountId } }),
+            ]);
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Error deleting super admin:', error);
+            return false;
+        }
+    }
     
 
 
