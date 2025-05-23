@@ -24,13 +24,29 @@ export class AcademyService {
     }
 
     //@UseGuards(JwtGuard)
-    getAcademyById(id : number){
-        return this.prisma.academy.findUnique({
-            where : {
-                id : id
+    async getAcademyById(id: number) {
+        const academy = await this.prisma.academy.findUnique({
+          where: { id },
+          include: {
+            userLinks: {
+              select: {
+                userId: true
+              }
             }
-        })
-    }
+          }
+        });
+      
+        if (!academy) return null;
+      
+        return {
+          id: academy.id,
+          name: academy.name,
+          logo: academy.logo,
+          phone: academy.phone,
+          email: academy.email,
+          owners: academy.userLinks.map(link => link.userId)
+        };
+      }
 
 
 }
