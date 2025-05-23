@@ -25,6 +25,12 @@ export class AcademyController {
             return this.academyService.getAcademyById(id)
         }
 
+
+        @Get(":id/owners")
+        getAcademyOwners(@Param("id" , ParseIntPipe) id : number){
+            return this.academyService.getAcademyOwners(id)
+        }
+
         
         @HttpCode(HttpStatus.CREATED)
         @Post("create")
