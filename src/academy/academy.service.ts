@@ -25,28 +25,64 @@ export class AcademyService {
 
     //@UseGuards(JwtGuard)
     async getAcademyById(id: number) {
-        const academy = await this.prisma.academy.findUnique({
-          where: { id },
-          include: {
-            userLinks: {
-              select: {
-                userId: true
-              }
+      const academy = await this.prisma.academy.findUnique({
+        where: { id },
+        include: {
+          userLinks: {
+            select: {
+              userId: true
             }
           }
-        });
+        }
+      });
       
-        if (!academy) return null;
+      if (!academy) return null;
       
-        return {
+      return {
           id: academy.id,
           name: academy.name,
           logo: academy.logo,
           phone: academy.phone,
           email: academy.email,
           owners: academy.userLinks.map(link => link.userId)
-        };
+      };
+    }
+
+    async getAcademyOwners(id: number){
+      const academy = await this.prisma.academy.findUnique({
+        where: { id },
+        include: {
+          userLinks: {
+            select: {
+              user : {
+                select : {
+                  id : true,
+                  firstName : true,
+                  lastName : true,
+                  profilePhoto : true,
+                  isTeacher : true,
+                  isStudent : true,
+                  isParent : true,
+                  isSuperAdmin : true,
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      if (!academy) return null;
+      
+      return {
+        id: academy.id,
+        name: academy.name,
+        logo: academy.logo,
+        phone: academy.phone,
+        email: academy.email,
+        owners : academy.userLinks.map(link => link.user)
       }
+      
+    }
 
 
 }

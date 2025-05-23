@@ -46,7 +46,6 @@ model User{
   profilePhoto String? @default("")
 
 
-  isAcademy    Boolean @default(false)
   isStudent    Boolean @default(false)
   isParent     Boolean @default(false)
   isTeacher    Boolean @default(false)
