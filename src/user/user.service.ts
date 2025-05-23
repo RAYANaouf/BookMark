@@ -17,6 +17,12 @@ export class UserService {
                 account : {
                     email : email
                 }
+            },
+            select : {
+                id : true,
+                firstName : true ,
+                lastName : true ,
+                profilePhoto : true
             }
         });
     }
