@@ -31,6 +31,15 @@ export class AcademyController {
             return this.academyService.getAcademyOwners(id)
         }
 
+
+        @Post(":id/add-owner")
+        addAcademyOwner(
+            @Param("id" , ParseIntPipe) id : number,
+            @Body('userId') userId : number
+        ){
+            return this.academyService.assignUserToAcademy(userId , id)
+        }
+
         
         @HttpCode(HttpStatus.CREATED)
         @Post("create")
@@ -40,8 +49,6 @@ export class AcademyController {
                 limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
             })
         )
-
-        
         async createAcademy(
             @Body() academy : CreateAcademyDto,
             @UploadedFile() file? 

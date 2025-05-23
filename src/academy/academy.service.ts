@@ -85,4 +85,15 @@ export class AcademyService {
     }
 
 
+    async assignUserToAcademy(userId: number, academyId: number) {
+      return this.prisma.userAcademy.create({
+        data: {
+          userId,
+          academyId
+        }
+      });
+    }
+    
+
+
 }
