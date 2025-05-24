@@ -85,7 +85,7 @@ export class AcademyService {
         phone: result.phone,
         email: result.email,
         owners : result.userLinks.map(link => ({
-          id : link.user.id,
+          userId : link.user.id,
           firstName : link.user.firstName,
           lastName : link.user.lastName,
           profilePhoto : link.user.profilePhoto,
