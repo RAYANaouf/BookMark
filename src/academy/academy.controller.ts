@@ -33,11 +33,11 @@ export class AcademyController {
 
 
         @Post(":id/add-owner")
-        addAcademyOwner(
+        async addAcademyOwner(
             @Param("id" , ParseIntPipe) id : number,
             @Body('userId') userId : string
         ){
-            return this.academyService.assignUserToAcademy(parseInt(userId) , id)
+            return await this.academyService.assignUserToAcademy(parseInt(userId) , id)
         }
 
         

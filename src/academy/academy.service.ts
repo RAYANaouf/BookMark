@@ -85,14 +85,26 @@ export class AcademyService {
     }
 
 
-    async assignUserToAcademy(userId: number, academyId: number) {
-      return await this.prisma.userAcademy.create({
-        data: {
-          userId,
-          academyId
+
+    async assignUserToAcademy(userId: number, academyId: number): Promise<boolean> {
+      try {
+        await this.prisma.userAcademy.create({
+          data: { userId, academyId }
+        });
+        return true;
+      } catch (error) {
+        if (
+          error.code === "P2002" // Prisma unique constraint violation
+        ) {
+          console.warn("User is already assigned to this academy.");
+          return false;
         }
-      });
+    
+        console.error("Error assigning user to academy:", error);
+        throw new Error("Failed to assign user to academy.");
+      }
     }
+    
     
 
 
