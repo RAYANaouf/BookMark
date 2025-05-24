@@ -35,9 +35,9 @@ export class AcademyController {
         @Post(":id/add-owner")
         addAcademyOwner(
             @Param("id" , ParseIntPipe) id : number,
-            @Body('userId') userId : number
+            @Body('userId') userId : string
         ){
-            return this.academyService.assignUserToAcademy(userId , id)
+            return this.academyService.assignUserToAcademy(parseInt(userId) , id)
         }
 
         
