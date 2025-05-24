@@ -12,7 +12,7 @@ export class UserService {
     }
 
     async getUserByEmail(email: string) {
-        return this.prisma.user.findFirst({
+        const result = await this.prisma.user.findFirst({
             where : {
                 account : {
                     email : email
@@ -25,6 +25,18 @@ export class UserService {
                 profilePhoto : true
             }
         });
+
+        if(!result){
+            throw new Error("User not found");
+        }
+
+        return {
+            userId : result.id,
+            firstName : result.firstName,
+            lastName : result.lastName,
+            profilePhoto : result.profilePhoto
+        }
+
     }
       
 }
