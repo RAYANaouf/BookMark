@@ -64,6 +64,11 @@ export class AcademyService {
                   isStudent : true,
                   isParent : true,
                   isSuperAdmin : true,
+                  account : {
+                    select : {
+                      email : true
+                    }
+                  }
                 }
               }
             }
@@ -79,7 +84,10 @@ export class AcademyService {
         logo: academy.logo,
         phone: academy.phone,
         email: academy.email,
-        owners : academy.userLinks.map(link => link.user)
+        owners : academy.userLinks.map(link => ({
+          ...link.user,
+          email : link.user.account.email
+        }))
       }
       
     }
