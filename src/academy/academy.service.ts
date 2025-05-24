@@ -49,7 +49,7 @@ export class AcademyService {
     }
 
     async getAcademyOwners(id: number){
-      const academy = await this.prisma.academy.findUnique({
+      const result = await this.prisma.academy.findUnique({
         where: { id },
         include: {
           userLinks: {
@@ -76,16 +76,23 @@ export class AcademyService {
         }
       });
       
-      if (!academy) return null;
+      if (!result) return null;
       
       return {
-        id: academy.id,
-        name: academy.name,
-        logo: academy.logo,
-        phone: academy.phone,
-        email: academy.email,
-        owners : academy.userLinks.map(link => ({
-          ...link.user,
+        id: result.id,
+        name: result.name,
+        logo: result.logo,
+        phone: result.phone,
+        email: result.email,
+        owners : result.userLinks.map(link => ({
+          id : link.user.id,
+          firstName : link.user.firstName,
+          lastName : link.user.lastName,
+          profilePhoto : link.user.profilePhoto,
+          isTeacher : link.user.isTeacher,
+          isStudent : link.user.isStudent,
+          isParent : link.user.isParent,
+          isSuperAdmin : link.user.isSuperAdmin,
           email : link.user.account.email
         }))
       }
