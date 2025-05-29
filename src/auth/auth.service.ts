@@ -95,8 +95,8 @@ export class AuthService{
             "isParent"     : account.user?.isParent,
             "isTeacher"    : account.user?.isTeacher,
         }
-        
-        console.log(logTest)
+
+        console.log("logTest",logTest)
         
         
         return {
