@@ -6,6 +6,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { error } from "console";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { console } from "inspector";
 
 
 @Injectable({})
@@ -80,6 +81,22 @@ export class AuthService{
         //send back the user
         const token = await this.signTocken(account.id , account.email)
 
+
+        const logTest = {
+            "access_token" : token.access_token,
+            "accountId"    : account.id,
+            "userId"       : account.user?.id,
+            "firstName"    : account.user?.firstName,
+            "lastName"     : account.user?.lastName,
+            "profilePhoto" : account.user?.profilePhoto,
+            "email"        : account.email,
+            "isSuperAdmin" : account.user?.isSuperAdmin,
+            "isStudent"    : account.user?.isStudent,
+            "isParent"     : account.user?.isParent,
+            "isTeacher"    : account.user?.isTeacher,
+        }
+        
+        console.log(logTest)
         
         
         return {
