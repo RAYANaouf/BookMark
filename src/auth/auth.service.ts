@@ -49,26 +49,58 @@ export class AuthService{
 
     async login(dto : AuthDto){
         // find the user by email    
-        const user = await this.prisma.account.findUnique({
+        const account = await this.prisma.account.findUnique({
             where : {
-                email : dto.email
+                email : dto.email,
+            },
+            include : {
+                user : {
+                    select : {
+                        id : true,
+                        isSuperAdmin : true,
+                        isStudent : true,
+                        isParent : true,
+                        isTeacher : true,
+                        
+                        firstName : true,
+                        lastName : true,
+                        profilePhoto : true,
+                    }
+                }
             }
         })
         //if user does not exist throw exception
-        if(!user) throw new ForbiddenException('Credentials incorrect')
+        if(!account) throw new ForbiddenException('Credentials incorrect')
         // compare password
-        const isPasswordMatch = await argon.verify(user.hash, dto.password)
+        const isPasswordMatch = await argon.verify(account.hash, dto.password)
         //if password incorrect throw exception
         if(!isPasswordMatch){
             throw new ForbiddenException('Credentials incorrect')
         }
         //send back the user
-        return this.signTocken(user.id , user.email)
+        const token = await this.signTocken(account.id , account.email)
+
+        
+        
+        return {
+            "access_token" : token.access_token,
+            "accountId"    : account.id,
+            "userId"       : account.user?.id,
+            "firstName"    : account.user?.firstName,
+            "lastName"     : account.user?.lastName,
+            "profilePhoto" : account.user?.profilePhoto,
+            "email"        : account.email,
+            "isSuperAdmin" : account.user?.isSuperAdmin,
+            "isStudent"    : account.user?.isStudent,
+            "isParent"     : account.user?.isParent,
+            "isTeacher"    : account.user?.isTeacher,
+        }
     }
 
-    async createSuperAdmin(createSuperAdminDto: CreateSuperAdminDto , photoProfileUrl : string) {
 
-        console.log('📥 Received CreateSuperAdminDto:', createSuperAdminDto); // Log the full request body
+
+
+    async createSuperAdmin(createSuperAdminDto: CreateSuperAdminDto , photoProfileUrl : string) {
         
         const exist = await this.prisma.account.findUnique({
             where: { email: createSuperAdminDto.email }
