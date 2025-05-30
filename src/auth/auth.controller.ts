@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { AuthDto, CreateSuperAdminDto } from "./dto/auth.dto";
+import { AuthDto, CreateSuperAdminDto, SignUpDto } from "./dto/auth.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { memoryStorage } from "multer";
 import { v4 as uuidv4 } from 'uuid';
@@ -16,8 +16,8 @@ export class AuthController{
 
     @HttpCode(HttpStatus.CREATED)
     @Post("/signup")
-    signup(@Body() authDto:AuthDto){
-        return this.authService.signup(authDto)
+    signup(@Body() signUpDto:SignUpDto){
+        return this.authService.signup(signUpDto)
     }
 
     @HttpCode(HttpStatus.OK)
