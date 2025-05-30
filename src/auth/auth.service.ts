@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { AuthDto, CreateSuperAdminDto } from "./dto";
+import { AuthDto, CreateSuperAdminDto, SignUpDto } from "./dto";
 import * as argon from 'argon2'
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { error } from "console";
@@ -18,15 +18,30 @@ export class AuthService{
     ){}
 
 
-    async signup( dto : AuthDto){
+    async signup( dto : SignUpDto){
         try{
+            const exist = await this.prisma.account.findUnique({
+                where: { email: dto.email }
+            });
+            if (exist) {
+                throw new BadRequestException('Email already exist');
+            }
+
+            
             // generate the password hash 
             const hash = await argon.hash(dto.password)
             //save the new user in db
             const user = await this.prisma.account.create({
                 data:{
                     email : dto.email,
-                    hash
+                    hash,
+                    user : {
+                        create : {
+                            firstName : dto.firstName ?? "",
+                            lastName : dto.lastName ?? "",
+                            profilePhoto : dto.profilePhoto ?? "",
+                        }
+                    }
                 },
                 select : {
                     id : true,
