@@ -135,10 +135,7 @@ export class AcademyService {
               ...(role && { role }),
             },
           },
-        },
-        include: {
-          userLinks: true,
-        },
+        }
       });
     }
     
