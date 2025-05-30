@@ -101,6 +101,9 @@ export class AuthService{
                 role : "owner"
             }
         })
+
+        
+        console.log("see the result :: userId : " , account.user?.id , "  result : " , ownedAcademyCount )
         //send back the user
         const token = await this.signTocken(account.id , account.email)
         
