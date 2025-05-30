@@ -28,7 +28,7 @@ export class SignUpDto{
     @IsString()
     lastName? : string
 
-    @IsString()
+    
     profilePhoto? : string
 }
 
