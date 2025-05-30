@@ -104,7 +104,11 @@ export class AcademyService {
     async assignUserToAcademy(userId: number, academyId: number): Promise<boolean> {
       try {
         await this.prisma.userAcademy.create({
-          data: { userId, academyId }
+          data: { 
+            userId,
+            academyId,
+            role : "owner"
+          }
         });
         return true;
       } catch (error) {

@@ -93,39 +93,31 @@ export class AuthService{
         if(!isPasswordMatch){
             throw new ForbiddenException('Credentials incorrect')
         }
+
+        //count how many academies the user owns
+        const ownedAcademyCount = await this.prisma.userAcademy.count({
+            where : {
+                userId : account.user?.id,
+                role : "owner"
+            }
+        })
         //send back the user
         const token = await this.signTocken(account.id , account.email)
-
-
-        const logTest = {
-            "access_token" : token.access_token,
-            "accountId"    : account.id,
-            "userId"       : account.user?.id,
-            "firstName"    : account.user?.firstName,
-            "lastName"     : account.user?.lastName,
-            "profilePhoto" : account.user?.profilePhoto,
-            "email"        : account.email,
-            "isSuperAdmin" : account.user?.isSuperAdmin,
-            "isStudent"    : account.user?.isStudent,
-            "isParent"     : account.user?.isParent,
-            "isTeacher"    : account.user?.isTeacher,
-        }
-
-        console.log("logTest",logTest)
         
         
         return {
-            "access_token" : token.access_token,
-            "accountId"    : account.id,
-            "userId"       : account.user?.id,
-            "firstName"    : account.user?.firstName,
-            "lastName"     : account.user?.lastName,
-            "profilePhoto" : account.user?.profilePhoto,
-            "email"        : account.email,
-            "isSuperAdmin" : account.user?.isSuperAdmin,
-            "isStudent"    : account.user?.isStudent,
-            "isParent"     : account.user?.isParent,
-            "isTeacher"    : account.user?.isTeacher,
+            "access_token"   : token.access_token,
+            "accountId"      : account.id,
+            "userId"         : account.user?.id,
+            "firstName"      : account.user?.firstName,
+            "lastName"       : account.user?.lastName,
+            "profilePhoto"   : account.user?.profilePhoto,
+            "email"          : account.email,
+            "isSuperAdmin"   : account.user?.isSuperAdmin,
+            "isStudent"      : account.user?.isStudent,
+            "isParent"       : account.user?.isParent,
+            "isTeacher"      : account.user?.isTeacher,
+            "ownedAcademies" : ownedAcademyCount
         }
     }
 
