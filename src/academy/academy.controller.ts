@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AcademyService } from './academy.service';
 import { AcademyDto, CreateAcademyDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -93,5 +93,25 @@ export class AcademyController {
             
             return this.academyService.createAcademy(academy , logoUrl)
         }
+
+
+
+
+
+
+
+
+
+
+
+        @Get("user/:userId")
+        getAcademiesByUser(
+          @Param("userId", ParseIntPipe) userId: number,
+          @Query("role") role?: string // optional role filter, e.g., "owner"
+        ) {
+          return this.academyService.getAcademiesByUser(userId, role);
+        }
+        
+
 
 }

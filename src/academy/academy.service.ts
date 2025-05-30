@@ -126,6 +126,22 @@ export class AcademyService {
     }
     
     
+    async getAcademiesByUser(userId: number, role?: string) {
+      return this.prisma.academy.findMany({
+        where: {
+          userLinks: {
+            some: {
+              userId,
+              ...(role && { role }),
+            },
+          },
+        },
+        include: {
+          userLinks: true,
+        },
+      });
+    }
+    
 
 
 }
