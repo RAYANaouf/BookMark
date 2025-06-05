@@ -122,10 +122,13 @@ model TrainingProgram {
   id          Int      @id @default(autoincrement())
   name        String
   description String
-  targetAudience String   // ===> "Beginners", "High School Students", etc.
-  prerequisites String    // ===>"Basic HTML knowledge", comma-separated or markdown
-  whatYouWillLearn String // ===> markdown or bullet text
-  whatYouCanDo    String  // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
+  targetAudience    String?   // ===> "Beginners", "High School Students", etc.
+  prerequisites     String?    // ===>"Basic HTML knowledge", comma-separated or markdown
+  whatYouWillLearn  String? // ===> markdown or bullet text
+  whatYouCanDoAfter String?  // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
+
+  minAge Int?
+  maxAge Int?
 
   price       Float    @default(0.0) 
   imageUrl    String?  
