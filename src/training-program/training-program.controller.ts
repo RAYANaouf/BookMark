@@ -7,7 +7,7 @@ export class TrainingProgramController {
 
     constructor(private readonly trainingProgramService: TrainingProgramService) {}
 
-    @Post()
+    @Post("create")
     async create(@Body() dto: CreateTrainingProgramDto) {
       return this.trainingProgramService.create(dto);
     }
