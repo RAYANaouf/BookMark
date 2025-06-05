@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { TeacherModule } from './teacher/teacher.module';
 import { AcademyModule } from './academy/academy.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
+import { TrainingProgramModule } from './training-program/training-program.module';
 
 @Module({
   imports: [ 
@@ -16,7 +17,7 @@ import { SuperAdminModule } from './super-admin/super-admin.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, TeacherModule, AcademyModule, SuperAdminModule, 
+    UserModule, TeacherModule, AcademyModule, SuperAdminModule, TrainingProgramModule, 
   ],
   controllers : [AppController]
 })

@@ -118,6 +118,24 @@ model Teacher{
 
 
 
+model TrainingProgram {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  targetAudience String   // ===> "Beginners", "High School Students", etc.
+  prerequisites String    // ===>"Basic HTML knowledge", comma-separated or markdown
+  whatYouWillLearn String // ===> markdown or bullet text
+  whatYouCanDo    String  // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
+
+  price       Float    @default(0.0) 
+  imageUrl    String?  
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  // Relations
+  groups      Group[] // people who bought/joined it (organized into study groups)
+}
 
 
 
@@ -172,6 +190,9 @@ model Group{
   students Student[]
   seances  Seance[]
   exams    Exam[]
+
+  trainingProgramId Int?
+  trainingProgram TrainingProgram? @relation(fields: [trainingProgramId] , references: [id]) 
 
 }
 

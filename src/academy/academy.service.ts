@@ -119,8 +119,6 @@ export class AcademyService {
           console.warn("User is already assigned to this academy.");
           return false;
         }
-    
-        console.error("Error assigning user to academy:", error);
         throw new Error("Failed to assign user to academy.");
       }
     }
