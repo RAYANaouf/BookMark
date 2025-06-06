@@ -53,7 +53,6 @@ export class AcademyController {
             @Body() academy : CreateAcademyDto,
             @UploadedFile() file? 
         ){
-            console.log("===========>  ",file)
             let logoUrl : string | null = null
             if(file){
                 const fileName = 'academy_logo/' + uuidv4() + extname(file.originalname)

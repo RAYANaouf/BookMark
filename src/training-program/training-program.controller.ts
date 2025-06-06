@@ -9,6 +9,7 @@ export class TrainingProgramController {
 
     @Post("create")
     async create(@Body() dto: CreateTrainingProgramDto) {
+      console.log("create training program ====>> " , dto)
       return this.trainingProgramService.create(dto);
     }
 
