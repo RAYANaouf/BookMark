@@ -24,6 +24,8 @@ export class TrainingProgramController {
   ) {
       console.log("create training program ====>> " , dto)
       return this.trainingProgramService.create(dto);
-    }
+  }
+
+  
 
 }

@@ -135,6 +135,10 @@ model TrainingProgram {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
+
+  academyId   Int 
+  academy     Academy @relation(fields: [academyId] , references: [id])
+
   // Relations
   groups      Group[] // people who bought/joined it (organized into study groups)
 }
@@ -252,5 +256,6 @@ model Academy{
 
   modules Module[]
   userLinks UserAcademy[]
+  trainingPrograms TrainingProgram[]
 }
 

@@ -5,6 +5,11 @@ import { IsString, IsOptional, IsNumber, IsNumberString, IsNotEmpty } from 'clas
 
 export class CreateTrainingProgramDto {
   
+  
+  @IsNumber()
+  @Type(() => Number)
+  academyId: number;
+
   @IsString()
   @IsNotEmpty()
   name: string;
