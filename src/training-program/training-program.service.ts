@@ -18,6 +18,9 @@ export class TrainingProgramService {
                 whatYouCanDoAfter : dto.whatYouCanDoAfter,
                 minAge            : dto.minAge,
                 maxAge            : dto.maxAge,
+                academy: {
+                  connect: { id: dto.academyId } 
+                }
             },
         });
     }
