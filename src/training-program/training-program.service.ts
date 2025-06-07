@@ -25,5 +25,13 @@ export class TrainingProgramService {
         });
     }
 
+    async findByAcademy(academyId : number){
+        var result = this.prisma.trainingProgram.findMany({
+            where : {academyId}
+        }) 
+        console.log(" get training program by academy : " , result)
+        return result
+    }
+
 
 }

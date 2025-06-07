@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { TrainingProgramService } from './training-program.service';
 import { CreateTrainingProgramDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,5 +27,9 @@ export class TrainingProgramController {
   }
 
   
+  @Get('academy/:academyId')
+  async getByAcademy(@Param('academyId') academyId: string) {
+    return this.trainingProgramService.findByAcademy(Number(academyId));
+  }
 
 }
