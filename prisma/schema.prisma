@@ -119,13 +119,14 @@ model Teacher{
 
 
 model TrainingProgram {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  targetAudience    String?   // ===> "Beginners", "High School Students", etc.
+  id                Int      @id @default(autoincrement())
+  name              String
+  description       String
+  coverPhoto        String?
+  targetAudience    String?    // ===> "Beginners", "High School Students" ...
   prerequisites     String?    // ===>"Basic HTML knowledge", comma-separated or markdown
-  whatYouWillLearn  String? // ===> markdown or bullet text
-  whatYouCanDoAfter String?  // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
+  whatYouWillLearn  String?    // ===> markdown or bullet text
+  whatYouCanDoAfter String?    // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
 
   minAge Int?
   maxAge Int?
