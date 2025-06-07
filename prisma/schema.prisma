@@ -132,7 +132,8 @@ model TrainingProgram {
   maxAge Int?
 
   price       Float    @default(0.0)
-
+  enabled     Boolean  @default(true)
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
