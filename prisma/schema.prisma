@@ -51,10 +51,8 @@ model User{
   isTeacher    Boolean @default(false)
   isSuperAdmin Boolean @default(false)
   
-  student      Student? 
-  parent       Parent? 
-  teacher      Teacher? 
   superAdmin   SuperAdmin?
+
 
   account Account @relation(fields: [accountId], references: [id])
   @@unique([accountId])
@@ -72,48 +70,6 @@ model SuperAdmin{
 
   user  User @relation(fields: [userId], references: [id])
   @@unique([userId])
-}
-
-model Student{
-  id Int @id @default(autoincrement())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId Int 
-  user User @relation(fields: [userId], references: [id])
-
-  groups  Group[]
-  parents Parent[]
-
-  @@unique([userId])
-}
-
-model Parent{
-  id Int @id @default(autoincrement())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId Int 
-  user  User @relation(fields: [userId], references: [id])
-
-  students Student[]
-
-  @@unique([userId])
-}
-model Teacher{
-  id Int @id @default(autoincrement())
-  userId Int 
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-  @@unique([userId])
-
-
-  seances Seance[]
 }
 
 
@@ -182,9 +138,6 @@ model Seance{
   groupId Int
   group Group @relation(fields: [groupId], references: [id])
 
-  teacherId Int
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-
   supports Support[]
 }
 
@@ -195,9 +148,9 @@ model Group{
   moduleId Int
   module Module @relation(fields: [moduleId], references: [id])
 
-  students Student[]
   seances  Seance[]
   exams    Exam[]
+
 
   trainingProgramId Int?
   trainingProgram TrainingProgram? @relation(fields: [trainingProgramId] , references: [id]) 
