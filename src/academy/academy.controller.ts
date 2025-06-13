@@ -85,10 +85,8 @@ export class AcademyController {
 
                     stream.end(file.buffer)
                     
-                })
-                
+                })   
             }
-
             
             return this.academyService.createAcademy(academy , logoUrl)
         }

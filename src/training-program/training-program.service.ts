@@ -7,7 +7,7 @@ export class TrainingProgramService {
 
     constructor(private readonly prisma: PrismaService) {}
 
-    async create(dto: CreateTrainingProgramDto) {
+    async create(dto: CreateTrainingProgramDto , coverPhotoUrl? : string) {
         return this.prisma.trainingProgram.create({
             data: {
                 name: dto.name,
@@ -18,6 +18,7 @@ export class TrainingProgramService {
                 whatYouCanDoAfter : dto.whatYouCanDoAfter,
                 minAge            : dto.minAge,
                 maxAge            : dto.maxAge,
+                coverPhoto        : coverPhotoUrl,
                 academy: {
                   connect: { id: dto.academyId } 
                 }
