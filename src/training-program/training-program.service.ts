@@ -12,7 +12,7 @@ export class TrainingProgramService {
             data: {
                 name: dto.name,
                 description: dto.description,
-                targetAudience    : dto.forWho,
+                targetAudience    : dto.targetAudience,
                 prerequisites     : dto.prerequisites,
                 whatYouWillLearn  : dto.whatYouWillLearn,
                 whatYouCanDoAfter : dto.whatYouCanDoAfter,
