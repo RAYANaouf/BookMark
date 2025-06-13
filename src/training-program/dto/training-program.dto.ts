@@ -18,7 +18,7 @@ export class CreateTrainingProgramDto {
   @IsNotEmpty()
   description: string;
 
-  forWho?: string;
+  targetAudience?: string;
 
   prerequisites?: string;
 
@@ -29,5 +29,7 @@ export class CreateTrainingProgramDto {
   minAge : number
 
   maxAge : number
+
+  price : number
 
 }
