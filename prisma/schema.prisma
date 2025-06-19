@@ -168,7 +168,9 @@ model Exam{
 }
 
 
-
+model Quiz{
+  id Long
+}
 
 
 

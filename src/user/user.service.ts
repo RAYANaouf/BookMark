@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -37,6 +38,22 @@ export class UserService {
             profilePhoto : result.profilePhoto
         }
 
+    }
+
+
+    async editProfile(userDto : UserDto){
+        const result = await this.prisma.user.update({
+            where : {
+                id : userDto.id
+            },
+            data : {
+                firstName : userDto.firstName,
+                lastName : userDto.lastName,
+                profilePhoto : userDto.profilePhoto
+            }
+        });
+
+        return true
     }
       
 }
