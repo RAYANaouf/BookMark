@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { userInfo } from 'os';
 import { JwtGuard } from 'src/auth/guard';
@@ -34,7 +34,7 @@ export class UserController {
         return this.userService.getUserByEmail(email);
     }
 
-    @Get('edit-profile/:id')
+    @Post('edit-profile/:id')
     editProfile(@Body() userDto : UserDto) {
         return this.userService.editProfile(userDto);
     }
