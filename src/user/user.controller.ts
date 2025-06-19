@@ -36,7 +36,7 @@ export class UserController {
 
     @Get('edit-profile/:id')
     editProfile(@Body() userDto : UserDto) {
-        //return this.userService.editProfile(userDto);
+        return this.userService.editProfile(userDto);
     }
 
 
