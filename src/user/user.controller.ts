@@ -34,6 +34,8 @@ export class UserController {
         return this.userService.getUserByEmail(email);
     }
 
+
+    
     @Post('edit-profile/:id')
     editProfile(@Body() userDto : UserDto) {
         return this.userService.editProfile(userDto);
