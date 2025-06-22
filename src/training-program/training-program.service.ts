@@ -35,4 +35,15 @@ export class TrainingProgramService {
     }
 
 
+    async getAll(){
+        var result = await this.prisma.trainingProgram.findMany({
+            include : {
+                academy : true
+            }
+        })
+        console.log(" get all training program : " , result)
+        return result
+    }
+
+
 }

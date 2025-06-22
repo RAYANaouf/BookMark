@@ -10,17 +10,27 @@ import * as firebaseAdmin from 'firebase-admin';
 @Controller('training-program')
 export class TrainingProgramController {
 
-    constructor(private readonly trainingProgramService: TrainingProgramService) {}
+  constructor(private readonly trainingProgramService: TrainingProgramService) {}
 
-    
-    @HttpCode(HttpStatus.CREATED)
-    @Post("create")
-    @UseInterceptors(
-      FileInterceptor("cover",{
-        storage : memoryStorage(), //in-memory buffer
-        limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
-      })
-    )
+   
+  
+
+
+  @Get('all')
+  getAll(){
+    return this.trainingProgramService.getAll()
+  }
+
+
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post("create")
+  @UseInterceptors(
+    FileInterceptor("cover",{
+      storage : memoryStorage(), //in-memory buffer
+      limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
+    })
+  )
     async create(
       @Body() dto: CreateTrainingProgramDto,
       @UploadedFile() file? 
