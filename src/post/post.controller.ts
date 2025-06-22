@@ -20,7 +20,7 @@ export class PostController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get('by-academy/:academyId')
+    @Get('academy/:academyId')
     getByAcademy(@Param('academyId') academyId: string) {
         return this.postService.findByAcademy(Number(academyId));
     }
