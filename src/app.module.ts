@@ -7,6 +7,8 @@ import { AppController } from './app.controller';
 import { AcademyModule } from './academy/academy.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
 import { TrainingProgramModule } from './training-program/training-program.module';
+import { PostController } from './post/post.controller';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [ 
@@ -16,8 +18,8 @@ import { TrainingProgramModule } from './training-program/training-program.modul
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, TrainingProgramModule, 
+    UserModule, AcademyModule, SuperAdminModule, TrainingProgramModule, PostModule, 
   ],
-  controllers : [AppController]
+  controllers : [AppController, PostController]
 })
 export class AppModule {}
