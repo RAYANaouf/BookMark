@@ -106,7 +106,7 @@ model Post {
   id          Int      @id @default(autoincrement())
   title       String
   description String
-  logo        String?   // This is the uploaded image URL
+  photo       String?   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 
