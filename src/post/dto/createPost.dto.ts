@@ -1,3 +1,4 @@
+import { Type } from "class-transformer"
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator"
 
 
@@ -6,7 +7,7 @@ import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator"
 export class CreatePostDto {
 
     @IsNumber()
-    @IsNotEmpty()
+    @Type(() => Number)
     academyId : number
     
     @IsString()
