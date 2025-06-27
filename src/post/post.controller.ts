@@ -29,7 +29,7 @@ export class PostController {
     @HttpCode(HttpStatus.CREATED)
     @Post('create')
     @UseInterceptors(
-        FileInterceptor("logo",{
+        FileInterceptor("photo",{
             storage : memoryStorage(), //in-memory buffer
             limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
         })
