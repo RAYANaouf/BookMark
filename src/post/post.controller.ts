@@ -39,6 +39,8 @@ export class PostController {
         @UploadedFile() file? 
     ) {
 
+        console.log("create post request : ", dto);
+        
         let logoUrl : string | null = null
         if(file){
             const fileName = 'post_cover/' + uuidv4() + extname(file.originalname)
