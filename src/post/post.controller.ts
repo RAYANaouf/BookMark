@@ -39,7 +39,7 @@ export class PostController {
         @UploadedFile() file? 
     ) {
 
-        console.log("create post request : ", dto);
+        console.log(`[DEBUG ${new Date().toISOString()}] create post request:`, dto);
         
         let logoUrl : string | null = null
         if(file){
@@ -57,13 +57,13 @@ export class PostController {
 
             await new Promise((resolve , reject) => {
                 stream.on("error" , (error) => {
-                    console.error("❌ Error uploading file:", error)
+                    console.error(`[ERROR ${new Date().toISOString()}] Error uploading file:`, error)
                     reject(error)
                 })
 
 
                 stream.on("finish" , async () => {
-                    console.log("✅ File uploaded successfully")
+                    console.log(`[INFO ${new Date().toISOString()}] File uploaded successfully`)
                     await fileUpload.makePublic();
                     logoUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`
                     resolve(null)
