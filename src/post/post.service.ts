@@ -30,7 +30,7 @@ export class PostService {
     return this.prisma.post.create({
       data: {
         title       : dto.title,
-        description : dto.content,
+        content     : dto.content,
         photo       : logoUrl ?? null,
         academy     : {
           connect: { id: dto.academyId },
