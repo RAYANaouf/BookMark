@@ -26,7 +26,7 @@ export class PostService {
     });
   }
 
-  async create(dto: CreatePostDto, logoUrl?: string | null) {
+  async create (dto: CreatePostDto, logoUrl?: string | null) {
     return this.prisma.post.create({
       data: {
         title       : dto.title,

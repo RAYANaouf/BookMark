@@ -9,6 +9,7 @@ import { SuperAdminModule } from './super-admin/super-admin.module';
 import { TrainingProgramModule } from './training-program/training-program.module';
 import { PostController } from './post/post.controller';
 import { PostModule } from './post/post.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [ 
@@ -18,7 +19,7 @@ import { PostModule } from './post/post.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, TrainingProgramModule, PostModule, 
+    UserModule, AcademyModule, SuperAdminModule, TrainingProgramModule, PostModule, StudentModule, 
   ],
   controllers : [AppController, PostController]
 })
