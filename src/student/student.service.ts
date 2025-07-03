@@ -14,7 +14,8 @@ export class StudentService {
             where : {
                 academyLinks : {
                     some : {
-                        academyId : id
+                        academyId : id,
+                        role      : "Student"
                     }
                 }
             }
