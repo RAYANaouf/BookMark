@@ -58,6 +58,7 @@ model User{
   @@unique([accountId])
 
   academyLinks UserAcademy[]
+  enrollmentRequests EnrollmentRequest[]
 }
 
 
@@ -99,6 +100,7 @@ model TrainingProgram {
 
   // Relations
   groups      Group[] // people who bought/joined it (organized into study groups)
+  enrollmentRequests EnrollmentRequest[]
 }
 
 
@@ -190,19 +192,6 @@ model Exam{
 
 
 
-model UserAcademy{
-  userId  Int
-  academyId Int
-  role String? //admin , owner , employee...
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields : [userId] , references : [id])
-  academy Academy @relation(fields: [academyId] , references: [id])
-
-  @@id([userId , academyId])
-}
 
 
 
@@ -224,5 +213,80 @@ model Academy{
   userLinks UserAcademy[]
   trainingPrograms TrainingProgram[]
   posts Post[]
+}
+
+
+model EnrollmentRequest {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  trainingProgramId Int
+  status           String   @default("pending") // pending, approved, rejected
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id])
+  trainingProgram  TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+
+  @@unique([userId, trainingProgramId]) // prevent duplicate requests
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+model UserAcademy{
+  userId  Int
+  academyId Int
+  role String? //admin , owner , employee...
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields : [userId] , references : [id])
+  academy Academy @relation(fields: [academyId] , references: [id])
+
+  @@id([userId , academyId])
 }
 
