@@ -3,13 +3,12 @@
 import { Type } from 'class-transformer';
 import { IsString, IsOptional, IsNumber, IsNumberString, IsNotEmpty } from 'class-validator';
 
-export class CreateTrainingProgramDto {
+export class CreateCourseDto {
   
   
   @IsNumber()
   @Type(() => Number)
   academyId: number;
-
   @IsString()
   @IsNotEmpty()
   name: string;

@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AcademyModule } from './academy/academy.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
-import { TrainingProgramModule } from './training-program/training-program.module';
+import { CourseModule } from './course/course.module';
 import { PostController } from './post/post.controller';
 import { PostModule } from './post/post.module';
 import { StudentModule } from './student/student.module';
@@ -19,7 +19,7 @@ import { StudentModule } from './student/student.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, TrainingProgramModule, PostModule, StudentModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, 
   ],
   controllers : [AppController, PostController]
 })

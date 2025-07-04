@@ -60,9 +60,6 @@ export class AcademyService {
                   firstName : true,
                   lastName : true,
                   profilePhoto : true,
-                  isTeacher : true,
-                  isStudent : true,
-                  isParent : true,
                   isSuperAdmin : true,
                   account : {
                     select : {
@@ -89,9 +86,6 @@ export class AcademyService {
           firstName : link.user.firstName,
           lastName : link.user.lastName,
           profilePhoto : link.user.profilePhoto,
-          isTeacher : link.user.isTeacher,
-          isStudent : link.user.isStudent,
-          isParent : link.user.isParent,
           isSuperAdmin : link.user.isSuperAdmin,
           email : link.user.account.email
         }))

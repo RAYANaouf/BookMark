@@ -10,27 +10,20 @@ export class SuperAdminService {
 
 
     async getAllSuperAdmin(){
-        const superAdminList = await this.prisma.superAdmin.findMany({
-            include : {
-                user : {
-                    select : {
-                        firstName : true ,
-                        lastName  : true ,
-                        profilePhoto : true
-                    }
-                }
-            }
+        const superAdminList = await this.prisma.user.findMany({
+            where : {
+                isSuperAdmin : true
+            },
         })
 
         const formattedList = superAdminList.map((superAdmin) => {
             return {
                 id : superAdmin.id,
-                userId : superAdmin.userId,
                 createdAt : superAdmin.createdAt,
                 updatedAt : superAdmin.updatedAt,
-                firstName : superAdmin.user.firstName,
-                lastName : superAdmin.user.lastName,
-                profilePhoto : superAdmin.user.profilePhoto
+                firstName : superAdmin.firstName,
+                lastName : superAdmin.lastName,
+                profilePhoto : superAdmin.profilePhoto
             }
         })
 
@@ -42,30 +35,20 @@ export class SuperAdminService {
 
     //@UseGuards(JwtGuard)
     async getSuperAdminById(id : number){
-        const res = await this.prisma.superAdmin.findUnique({
+        const res = await this.prisma.user.findUnique({
             where : {
-                id : id
+                id : id,
+                isSuperAdmin : true
             },
-            include : {
-                user : {
-                    select : {
-                        firstName : true ,
-                        lastName  : true ,
-                        profilePhoto : true
-                    }
-                }
-            }
         })
         console.log("res : " , res)
         return {
-            
             id : res?.id,
-            userId : res?.userId,
             createdAt : res?.createdAt,
             updatedAt : res?.updatedAt,
-            firstName : res?.user?.firstName,
-            lastName : res?.user?.lastName,
-            profilePhoto : res?.user?.profilePhoto
+            firstName : res?.firstName,
+            lastName : res?.lastName,
+            profilePhoto : res?.profilePhoto
         }
     }
 
@@ -73,26 +56,24 @@ export class SuperAdminService {
 
     async deleteSuperAdmin(id: number): Promise<boolean> {
         try {
-            const superAdmin = await this.prisma.superAdmin.findUnique({
-                where: { id },
+            const superAdmin = await this.prisma.user.findUnique({
+                where: { 
+                    id,
+                    isSuperAdmin : true
+                },
                 include: {
-                    user: {
-                        include: {
-                            account: true,
-                        },
-                    },
+                    account: true
                 },
             });
     
             if (!superAdmin) return false;
     
-            const userId = superAdmin.userId;
-            const accountId = superAdmin.user.accountId;
+            const userId = superAdmin.id;
+            const accountId = superAdmin.account.id;
     
             // ⚠️ Transaction: All delete operations must succeed or all fail
             await this.prisma.$transaction([
-                // Delete in order: SuperAdmin → User → Account
-                this.prisma.superAdmin.delete({ where: { id } }),
+                // Delete in order: User → Account
                 this.prisma.user.delete({ where: { id: userId } }),
                 this.prisma.account.delete({ where: { id: accountId } }),
             ]);

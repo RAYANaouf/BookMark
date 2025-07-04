@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTrainingProgramDto } from './dto';
+import { CreateCourseDto } from './dto';
 
 @Injectable()
-export class TrainingProgramService {
+export class CourseService {
 
     constructor(private readonly prisma: PrismaService) {}
 
-    async create(dto: CreateTrainingProgramDto , coverPhotoUrl? : string) {
-        return this.prisma.trainingProgram.create({
+    async create(dto: CreateCourseDto , coverPhotoUrl? : string) {
+        return this.prisma.course.create({
             data: {
                 name: dto.name,
                 description: dto.description,
@@ -27,21 +27,21 @@ export class TrainingProgramService {
     }
 
     async findByAcademy(academyId : number){
-        var result = this.prisma.trainingProgram.findMany({
+        var result = this.prisma.course.findMany({
             where : {academyId}
         }) 
-        console.log(" get training program by academy : " , result)
+        console.log(" get course  by academy : " , result)
         return result
     }
 
 
     async getAll(){
-        var result = await this.prisma.trainingProgram.findMany({
+        var result = await this.prisma.course.findMany({
             include : {
                 academy : true
             }
         })
-        console.log(" get all training program : " , result)
+        console.log(" get all course : " , result)
         return result
     }
 

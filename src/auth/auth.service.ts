@@ -74,10 +74,6 @@ export class AuthService{
                     select : {
                         id : true,
                         isSuperAdmin : true,
-                        isStudent : true,
-                        isParent : true,
-                        isTeacher : true,
-                        
                         firstName : true,
                         lastName : true,
                         profilePhoto : true,
@@ -117,9 +113,6 @@ export class AuthService{
             "profilePhoto"   : account.user?.profilePhoto,
             "email"          : account.email,
             "isSuperAdmin"   : account.user?.isSuperAdmin,
-            "isStudent"      : account.user?.isStudent,
-            "isParent"       : account.user?.isParent,
-            "isTeacher"      : account.user?.isTeacher,
             "ownedAcademies" : ownedAcademyCount
         }
     }
@@ -148,9 +141,6 @@ export class AuthService{
                         firstName : createSuperAdminDto.firstName ?? "empty",
                         lastName : createSuperAdminDto.lastName ?? "empty",
                         profilePhoto : photoProfileUrl ?? "",
-                        superAdmin : {
-                            create : {}
-                        }
                     }
                 }
             }

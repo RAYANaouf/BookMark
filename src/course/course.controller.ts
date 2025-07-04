@@ -1,16 +1,16 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { TrainingProgramService } from './training-program.service';
-import { CreateTrainingProgramDto } from './dto';
+import { CourseService } from './course.service';
+import { CreateCourseDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname, resolve } from 'path';
 import * as firebaseAdmin from 'firebase-admin';
 
-@Controller('training-program')
-export class TrainingProgramController {
+@Controller('course')
+export class CourseController {
 
-  constructor(private readonly trainingProgramService: TrainingProgramService) {}
+  constructor(private readonly courseService : CourseService) {}
 
    
   
@@ -18,7 +18,7 @@ export class TrainingProgramController {
 
   @Get('all')
   getAll(){
-    return this.trainingProgramService.getAll()
+    return this.courseService.getAll()
   }
 
 
@@ -32,14 +32,14 @@ export class TrainingProgramController {
     })
   )
     async create(
-      @Body() dto: CreateTrainingProgramDto,
+      @Body() dto: CreateCourseDto,
       @UploadedFile() file? 
   ) {
 
     let coverPhotoUrl : string | null = null ;
 
     if(file){
-      const fileName   = 'training_program_cover/' + uuidv4() + extname(file.originalname)
+      const fileName   = 'course_cover/' + uuidv4() + extname(file.originalname)
       const bucket     = firebaseAdmin.storage().bucket()
       const fileUpload = bucket.file(fileName)
 
@@ -66,14 +66,14 @@ export class TrainingProgramController {
       })
     }
 
-    console.log("create training program ====>> " , dto)
-    return this.trainingProgramService.create(dto , coverPhotoUrl ?? undefined);
+    console.log("create course  ====>> " , dto)
+    return this.courseService.create(dto , coverPhotoUrl ?? undefined);
   }
 
   
   @Get('academy/:academyId')
   async getByAcademy(@Param('academyId') academyId: string) {
-    return this.trainingProgramService.findByAcademy(Number(academyId));
+    return this.courseService.findByAcademy(Number(academyId));
   }
 
 }
