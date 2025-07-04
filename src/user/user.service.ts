@@ -66,9 +66,14 @@ export class UserService {
                     },
                     data : {
                         profilePhoto : profilePhoto
+                    },
+                    select : {
+                        profilePhoto : true
                     }
                 }
             )
+        }else{
+            return ""
         }
     }
       
