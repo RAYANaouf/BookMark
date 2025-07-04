@@ -55,5 +55,21 @@ export class UserService {
 
         return true
     }
+
+
+    async changeProfilePhoto( userId : number , profilePhoto : string | null){
+        if(profilePhoto != null && profilePhoto != ""){
+            return await this.prisma.user.update(
+                {
+                    where : {
+                        id : userId
+                    },
+                    data : {
+                        profilePhoto : profilePhoto
+                    }
+                }
+            )
+        }
+    }
       
 }
