@@ -57,8 +57,11 @@ export class UserController {
         @Param('id' , ParseIntPipe) userId : number,
         @UploadedFile() file?
     ) {
+        console.log("log we are here 1")
         let logoUrl : string | null = null
         if(file){
+            
+        console.log("log we are here 2")
             const fileName = 'profile_photo/' + uuidv4() + extname(file.originalname)
 
             const bucket = firebaseAdmin.storage().bucket()
@@ -74,12 +77,15 @@ export class UserController {
 
             await new Promise((resolve , reject) => {
 
+                
+                console.log("log we are here 3")
                 stream.on("error" , (error) => {
                     console.error("❌ Error uploading file:", error)
                     reject(error)
                 })
 
-
+                
+                console.log("log we are here 4")
                 stream.on("finish" , async () => {
                     console.log("✅ File uploaded successfully")
                     await fileUpload.makePublic();
@@ -87,10 +93,15 @@ export class UserController {
                     resolve(null)
                 })
 
+                console.log("log we are here 5")
                 stream.end(file.buffer)
                 
             })   
         }    
+
+        
+        console.log("log we are here 6")
+
         return this.userService.changeProfilePhoto(userId , logoUrl);
     }
 
