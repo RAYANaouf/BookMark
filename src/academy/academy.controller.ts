@@ -17,6 +17,7 @@ export class AcademyController {
     
         @Get("all")
         getAll(){
+            console.log("we are just heeere.")
             return this.academyService.getAllAcademies()
         }
     
