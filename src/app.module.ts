@@ -10,6 +10,7 @@ import { CourseModule } from './course/course.module';
 import { PostController } from './post/post.controller';
 import { PostModule } from './post/post.module';
 import { StudentModule } from './student/student.module';
+import { EnrollmentRequestModule } from './enrollment-request/enrollment-request.module';
 
 @Module({
   imports: [ 
@@ -19,7 +20,7 @@ import { StudentModule } from './student/student.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, 
   ],
   controllers : [AppController, PostController]
 })

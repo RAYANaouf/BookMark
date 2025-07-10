@@ -9,6 +9,8 @@ export class CreateCourseDto {
   @IsNumber()
   @Type(() => Number)
   academyId: number;
+
+  
   @IsString()
   @IsNotEmpty()
   name: string;
