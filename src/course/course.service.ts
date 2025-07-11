@@ -41,7 +41,6 @@ export class CourseService {
                 academy : true
             }
         })
-        console.log(" get all course : " , result)
         return result
     }
 
