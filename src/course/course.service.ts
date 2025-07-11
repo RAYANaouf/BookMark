@@ -64,7 +64,7 @@ export class CourseService {
 
         const retrun_result = result.map(course => ({
             ...course,
-            requestState : course.enrollmentRequests.length > 0 ? course.enrollmentRequests[0].status : ""
+            requestState : course.enrollmentRequests[0]?.status ??  ""
         }))
         console.log("we just debug first ===> " , retrun_result)
 
