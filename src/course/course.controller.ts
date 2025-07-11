@@ -26,6 +26,11 @@ export class CourseController {
   @UseGuards(JwtGuard)
   @Get('all-courses')
   getAllCourses(@Request() req){
+    const authHeader = req.headers.authorization
+    if(authHeader && authHeader.startsWith("Bearer ")){
+      const token = authHeader.split("Bearer ")[1]
+      
+    }
     console.log("start testtt ====>> " )
     const userId = req.user.userId
     console.log("userId ====>> " , req.user)
