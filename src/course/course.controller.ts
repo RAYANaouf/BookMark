@@ -29,7 +29,7 @@ export class CourseController {
     console.log("start testtt ====>> " )
     const userId = req.user.userId
     console.log("userId ====>> " , req.user)
-    return this.courseService.getAll()
+    return this.courseService.getAllCourses(userId)
   }
 
 
