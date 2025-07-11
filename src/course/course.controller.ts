@@ -16,15 +16,7 @@ export class CourseController {
   constructor(private readonly courseService : CourseService) {}
 
    
-  
-
-
   @Get('all')
-  getAll(){
-    return this.courseService.getAll()
-  }
-
-  @Get('all-courses')
   getAllCourses(@Request() req){
     const userId = getUserIdFromRequest(req)
     console.log("start testtt ====>> " )
