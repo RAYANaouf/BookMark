@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, Param, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -8,6 +8,7 @@ import { extname, resolve } from 'path';
 import * as firebaseAdmin from 'firebase-admin';
 import { JwtGuard } from 'src/auth/guard';
 import { request } from 'http';
+import { getUserIdFromRequest } from 'src/utils/getUserIdFromRequest';
 
 @Controller('course')
 export class CourseController {
@@ -26,15 +27,16 @@ export class CourseController {
   @UseGuards(JwtGuard)
   @Get('all-courses')
   getAllCourses(@Request() req){
-    const authHeader = req.headers.authorization
-    if(authHeader && authHeader.startsWith("Bearer ")){
-      const token = authHeader.split("Bearer ")[1]
-      
-    }
+    const userId = getUserIdFromRequest(req)
     console.log("start testtt ====>> " )
-    const userId = req.user.userId
-    console.log("userId ====>> " , req.user)
-    return this.courseService.getAllCourses(userId)
+    console.log("userId ====>> " , userId)
+    if(!userId){
+      return this.courseService.getAll()
+    }else{
+      return this.courseService.getAllCourses(userId)
+    }
+    
+
   }
 
 
