@@ -117,7 +117,7 @@ export class AuthService{
         
         
         return {
-            "access_token"   : token.access_token,
+            "accessToken"   : token.accessToken,
             "accountId"      : account.id,
             "userId"         : account.user.id,
             "firstName"      : account.user.firstName,
@@ -179,7 +179,7 @@ export class AuthService{
         accountId : number,
         userId : number,
         email  : string
-    ) : Promise<{access_token : String}>{
+    ) : Promise<{accessToken : String}>{
 
         const payload = {
             userId,
@@ -198,7 +198,7 @@ export class AuthService{
 
 
         return {
-            access_token : token,
+            accessToken : token,
         }
 
         
