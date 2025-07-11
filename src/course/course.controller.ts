@@ -24,7 +24,6 @@ export class CourseController {
     return this.courseService.getAll()
   }
 
-  @UseGuards(JwtGuard)
   @Get('all-courses')
   getAllCourses(@Request() req){
     const userId = getUserIdFromRequest(req)
