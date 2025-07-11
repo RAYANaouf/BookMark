@@ -45,12 +45,21 @@ export class AuthService{
                 },
                 select : {
                     id : true,
-                    email : true
+                    email : true,
+                    user : {
+                        select : {
+                            id : true,
+                        }
+                    }
                 }
             })
+
+            if(!user.user){
+                throw new BadRequestException('User not created');
+            }
         
             //return the saved user
-            return this.signTocken(user.id , user.email) ;
+            return this.signTocken(user.id , user.user.id , user.email  ) ;
         }
         catch(e){
             if(e instanceof PrismaClientKnownRequestError){
@@ -101,18 +110,21 @@ export class AuthService{
         
         console.log("see the result :: userId : " , account.user?.id , "  result : " , ownedAcademyCount )
         //send back the user
-        const token = await this.signTocken(account.id , account.email)
+        if(!account.user){
+            throw new ForbiddenException('User not found')
+        }
+        const token = await this.signTocken(account.id , account.user.id ,account.email)
         
         
         return {
             "access_token"   : token.access_token,
             "accountId"      : account.id,
-            "userId"         : account.user?.id,
-            "firstName"      : account.user?.firstName,
-            "lastName"       : account.user?.lastName,
-            "profilePhoto"   : account.user?.profilePhoto,
+            "userId"         : account.user.id,
+            "firstName"      : account.user.firstName,
+            "lastName"       : account.user.lastName,
+            "profilePhoto"   : account.user.profilePhoto,
             "email"          : account.email,
-            "isSuperAdmin"   : account.user?.isSuperAdmin,
+            "isSuperAdmin"   : account.user.isSuperAdmin,
             "ownedAcademies" : ownedAcademyCount
         }
     }
@@ -143,21 +155,35 @@ export class AuthService{
                         profilePhoto : photoProfileUrl ?? "",
                     }
                 }
+            },
+            select : {
+                id    : true,
+                email : true,
+                user  : {
+                    select : {
+                        id : true,
+                    }
+                }
             }
         });
-    
-        return await this.signTocken(account.id, account.email);
+
+        if(!account.user){
+            throw new BadRequestException('User not created');
+        }
+        return await this.signTocken( account.id, account.user.id,  account.email);
     }
     
 
 
     async signTocken(
-        userid : number,
+        accountId : number,
+        userId : number,
         email  : string
     ) : Promise<{access_token : String}>{
 
         const payload = {
-            sub : userid,
+            userId,
+            accountId,
             email
         }
         const secret = this.config.get('JWT_SECRET')
@@ -165,7 +191,7 @@ export class AuthService{
         const token = await this.jwt.signAsync(
             payload,
             {
-                expiresIn : '1440m',
+                expiresIn : '1310400m',
                 secret : secret
             }
         )
