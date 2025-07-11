@@ -59,6 +59,9 @@ export class CourseService {
             }
         })
 
+        
+        console.log("the result log  ===> " , result)
+
         const retrun_result = result.map(course => ({
             ...course,
             requestState : course.enrollmentRequests[0].status
