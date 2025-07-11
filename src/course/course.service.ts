@@ -44,5 +44,29 @@ export class CourseService {
         return result
     }
 
+    async getAllCourses(userId : number){
+        var result = await this.prisma.course.findMany({
+            include : {
+                academy : true,
+                enrollmentRequests : {
+                    where : {
+                        userId: userId
+                    },
+                    select : {
+                        status : true
+                    }
+                }
+            }
+        })
+
+        const retrun_result = result.map(course => ({
+            ...course,
+            requestState : course.enrollmentRequests[0].status
+        }))
+        console.log("we just debug first ===> " , retrun_result)
+
+        return retrun_result
+    }
+
 
 }
