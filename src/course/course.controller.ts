@@ -19,7 +19,7 @@ export class CourseController {
   @Get('all')
   getAllCourses(@Request() req){
     const userId = getUserIdFromRequest(req)
-    console.log("start testtt ====>> " , req)
+    console.log("start testtt ====>> " , req.user)
     console.log("userId ====>> " , userId)
     if(!userId){
       return this.courseService.getAll()
