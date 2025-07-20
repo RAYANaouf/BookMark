@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ForbiddenException } from '@nestjs/common';
+import { AddTeacherDto } from './dto/add-teacher.dto';
 
 @Injectable()
 export class TeacherService {
@@ -66,6 +68,50 @@ export class TeacherService {
                         }
                     }
                 }
+            }
+        });
+    }
+
+    async addTeacherToAcademy(dto: AddTeacherDto) {
+        // Check if the user exists
+        const user = await this.prisma.user.findUnique({
+            where: { id: dto.userId }
+        });
+
+        if (!user) {
+            throw new ForbiddenException('User not found');
+        }
+
+        // Check if the academy exists
+        const academy = await this.prisma.academy.findUnique({
+            where: { id: dto.academyId }
+        });
+
+        if (!academy) {
+            throw new ForbiddenException('Academy not found');
+        }
+
+        // Check if the user already has a Teacher role in this academy
+        const existingTeacherLink = await this.prisma.userAcademy.findFirst({
+            where: {
+                userId: dto.userId,
+                academyId: dto.academyId,
+                role: 'Teacher'
+            }
+        });
+
+        // If user already has Teacher role, return the existing link
+        if (existingTeacherLink) {
+            return existingTeacherLink;
+        }
+
+        // Create a new user-academy link with Teacher role
+        // This allows the user to have multiple roles (e.g., Teacher and Owner) for the same academy
+        return this.prisma.userAcademy.create({
+            data: {
+                userId: dto.userId,
+                academyId: dto.academyId,
+                role: 'Teacher'
             }
         });
     }
