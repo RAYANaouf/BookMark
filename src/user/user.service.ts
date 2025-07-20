@@ -99,6 +99,19 @@ export class UserService {
                 academyId: link.academyId,
                 academyName: link.academy.name,
                 role: link.role
+            })),
+            enrollmentRequests: user.enrollmentRequests.map(request => ({
+                id: request.id,
+                status: request.status,
+                createdAt: request.createdAt,
+                updatedAt: request.updatedAt,
+                course: {
+                    id: request.courses.id,
+                    name: request.courses.name,
+                    coverPhoto: request.courses.coverPhoto,
+                    description: request.courses.description,
+                    academy: request.courses.academy
+                }
             }))
         };
     }
