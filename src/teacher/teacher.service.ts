@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ForbiddenException } from '@nestjs/common';
 import { AddTeacherDto } from './dto/add-teacher.dto';
+import { RemoveTeacherDto } from './dto/remove-teacher.dto';
 
 @Injectable()
 export class TeacherService {
@@ -112,6 +113,32 @@ export class TeacherService {
                 userId: dto.userId,
                 academyId: dto.academyId,
                 role: 'Teacher'
+            }
+        });
+    }
+
+    async removeTeacherFromAcademy(dto: RemoveTeacherDto) {
+        // Check if the teacher exists in the academy
+        const teacherLink = await this.prisma.userAcademy.findFirst({
+            where: {
+                userId: dto.userId,
+                academyId: dto.academyId,
+                role: 'Teacher'
+            }
+        });
+
+        if (!teacherLink) {
+            throw new ForbiddenException('Teacher not found in this academy');
+        }
+
+        // Delete the teacher role for this user and academy
+        return this.prisma.userAcademy.delete({
+            where: {
+                role : 'Teacher',
+                userId_academyId: {
+                    userId: dto.userId,
+                    academyId: dto.academyId,
+                }
             }
         });
     }
