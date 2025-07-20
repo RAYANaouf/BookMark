@@ -60,6 +60,27 @@ export class UserService {
                             }
                         }
                     }
+                },
+                enrollmentRequests: {
+                    include: {
+                        courses: {
+                            select: {
+                                id: true,
+                                name: true,
+                                coverPhoto: true,
+                                description: true,
+                                academy: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    orderBy: {
+                        createdAt: 'desc'
+                    }
                 }
             }
         });
