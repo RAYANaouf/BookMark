@@ -41,6 +41,12 @@ export class UserController {
 
 
     
+    @Get(':id')
+    @UseGuards(JwtGuard)
+    async getUserById(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.getUserById(id);
+    }
+
     @Post('edit-profile/:id')
     editProfile(@Body() userDto : UserDto) {
         return this.userService.editProfile(userDto);

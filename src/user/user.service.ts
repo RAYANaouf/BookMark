@@ -41,13 +41,54 @@ export class UserService {
     }
 
 
-    async editProfile(userDto : UserDto){
+    async getUserById(id: number) {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+            include: {
+                account: {
+                    select: {
+                        email: true
+                    }
+                },
+                academyLinks: {
+                    select: {
+                        academyId: true,
+                        role: true,
+                        academy: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return {
+            id: user.id,
+            email: user.account.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profilePhoto: user.profilePhoto,
+            roles: user.academyLinks.map(link => ({
+                academyId: link.academyId,
+                academyName: link.academy.name,
+                role: link.role
+            }))
+        };
+    }
+
+    async editProfile(userDto: UserDto) {
         const result = await this.prisma.user.update({
-            where : {
-                id : userDto.id
+            where: {
+                id: userDto.id
             },
-            data : {
-                firstName : userDto.firstName,
+            data: {
+                firstName: userDto.firstName,
                 lastName : userDto.lastName,
                 profilePhoto : userDto.profilePhoto
             }
