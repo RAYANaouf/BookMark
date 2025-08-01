@@ -1,21 +1,57 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { IsNumber, IsString, IsOptional, IsEmail } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-
-
-export class UserDto{
-
+export class UserDto {
+    @ApiProperty({
+        description: 'The unique identifier of the user',
+        example: 1,
+        type: Number
+    })
     @IsNumber()
-    id : number
+    id: number;
     
+    @ApiPropertyOptional({
+        description: 'User\'s phone number',
+        example: '+1234567890',
+        nullable: true
+    })
     @IsString()
-    phone? : string
+    @IsOptional()
+    phone?: string;
 
+    @ApiPropertyOptional({
+        description: 'User\'s first name',
+        example: 'John',
+        nullable: true
+    })
     @IsString()
-    firstName? : string
+    @IsOptional()
+    firstName?: string;
 
+    @ApiPropertyOptional({
+        description: 'User\'s last name',
+        example: 'Doe',
+        nullable: true
+    })
     @IsString()
-    lastName? : string
+    @IsOptional()
+    lastName?: string;
 
-    
-    profilePhoto? : string
+    @ApiPropertyOptional({
+        description: 'URL to the user\'s profile photo',
+        example: 'https://storage.googleapis.com/...',
+        nullable: true
+    })
+    @IsString()
+    @IsOptional()
+    profilePhoto?: string;
+
+    @ApiPropertyOptional({
+        description: 'User\'s email address',
+        example: 'user@example.com',
+        nullable: true
+    })
+    @IsEmail()
+    @IsOptional()
+    email?: string;
 }

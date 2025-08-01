@@ -1,54 +1,262 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { userInfo } from 'os';
+import { 
+    Body, 
+    Controller, 
+    Get, 
+    HttpCode, 
+    HttpStatus, 
+    Param, 
+    ParseIntPipe, 
+    Patch, 
+    Post, 
+    UploadedFile, 
+    UseGuards, 
+    UseInterceptors,
+    BadRequestException
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { extname } from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import * as firebaseAdmin from 'firebase-admin';
+import { 
+    ApiTags, 
+    ApiOperation, 
+    ApiResponse, 
+    ApiBody, 
+    ApiConsumes, 
+    ApiParam, 
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiNotFoundResponse,
+    ApiBadRequestResponse,
+    ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/decoretor/get-user.decorator';
 import { UserService } from './user.service';
 import { UserDto } from './dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import { extname, resolve } from 'path';
-import * as firebaseAdmin from 'firebase-admin';
 
-
-
-
-
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
+    constructor(private readonly userService: UserService) {}
 
-
-    constructor(
-        private userService : UserService
-    ){
-
-    }
-
-
+    @Get('me')
     @UseGuards(JwtGuard)
     @HttpCode(HttpStatus.OK)
-    @Get('me')
-    getMe(){
-        return "user"
+    @ApiOperation({ 
+        summary: 'Get current user profile',
+        description: 'Retrieves the profile of the currently authenticated user.'
+    })
+    @ApiBearerAuth()
+    @ApiOkResponse({
+        description: 'Successfully retrieved user profile',
+        type: UserDto
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized - No valid token provided',
+        schema: {
+            example: {
+                statusCode: 401,
+                message: 'Unauthorized',
+                error: 'Unauthorized'
+            }
+        }
+    })
+    getMe(@GetUser() user: any) {
+        return this.userService.getUserById(user.id);
     }
 
-
     @Get('by-email/:email')
+    @ApiOperation({ 
+        summary: 'Get user by email',
+        description: 'Retrieves a user profile by email address.'
+    })
+    @ApiParam({
+        name: 'email',
+        required: true,
+        description: 'Email address of the user to retrieve',
+        example: 'user@example.com'
+    })
+    @ApiOkResponse({
+        description: 'Successfully retrieved user by email',
+        type: UserDto
+    })
+    @ApiNotFoundResponse({
+        description: 'User not found',
+        schema: {
+            example: {
+                statusCode: 404,
+                message: 'User not found',
+                error: 'Not Found'
+            }
+        }
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid email format',
+        schema: {
+            example: {
+                statusCode: 400,
+                message: 'Invalid email format',
+                error: 'Bad Request'
+            }
+        }
+    })
     getUserByEmail(@Param('email') email: string) {
+        if (!email.includes('@')) {
+            throw new BadRequestException('Invalid email format');
+        }
         return this.userService.getUserByEmail(email);
     }
 
-
-    
     @Get(':id')
     @UseGuards(JwtGuard)
+    @ApiOperation({ 
+        summary: 'Get user by ID',
+        description: 'Retrieves a user profile by ID. Requires authentication.'
+    })
+    @ApiBearerAuth()
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID of the user to retrieve',
+        example: 1
+    })
+    @ApiOkResponse({
+        description: 'Successfully retrieved user by ID',
+        type: UserDto
+    })
+    @ApiNotFoundResponse({
+        description: 'User not found',
+        schema: {
+            example: {
+                statusCode: 404,
+                message: 'User not found',
+                error: 'Not Found'
+            }
+        }
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized - No valid token provided',
+        schema: {
+            example: {
+                statusCode: 401,
+                message: 'Unauthorized',
+                error: 'Unauthorized'
+            }
+        }
+    })
     async getUserById(@Param('id', ParseIntPipe) id: number) {
         return this.userService.getUserById(id);
     }
 
     @Post('edit-profile/:id')
-    editProfile(@Body() userDto : UserDto) {
+    @UseGuards(JwtGuard)
+    @UseInterceptors(
+        FileInterceptor('profilePhoto', {
+            storage: memoryStorage(),
+            limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+        })
+    )
+    @ApiOperation({ 
+        summary: 'Update user profile',
+        description: 'Updates a user\'s profile information and/or photo. Requires authentication.'
+    })
+    @ApiBearerAuth()
+    @ApiConsumes('multipart/form-data')
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID of the user to update',
+        example: 1
+    })
+    @ApiBody({
+        description: 'User profile update data',
+        required: false,
+        schema: {
+            type: 'object',
+            properties: {
+                firstName: { 
+                    type: 'string',
+                    example: 'John',
+                    description: 'User\'s first name'
+                },
+                lastName: { 
+                    type: 'string',
+                    example: 'Doe',
+                    description: 'User\'s last name'
+                },
+                phone: { 
+                    type: 'string',
+                    example: '+1234567890',
+                    description: 'User\'s phone number'
+                },
+                profilePhoto: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'User\'s profile photo (max 5MB, jpg/jpeg/png)'
+                }
+            },
+            required : ['firstName','lastName','phone','profilePhoto']
+        }
+    })
+    @ApiOkResponse({
+        description: 'Profile updated successfully',
+        type: UserDto
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid input data',
+        schema: {
+            example: {
+                statusCode: 400,
+                message: 'Invalid input data',
+                error: 'Bad Request'
+            }
+        }
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized - No valid token provided',
+        schema: {
+            example: {
+                statusCode: 401,
+                message: 'Unauthorized',
+                error: 'Unauthorized'
+            }
+        }
+    })
+    async editProfile(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() userDto: UserDto,
+        @UploadedFile() file?: Express.Multer.File
+    ) {
+        let photoUrl: string | null = null;
+        
+        if (file) {
+            const fileName = `profile_photos/${uuidv4()}${extname(file.originalname)}`;
+            const bucket = firebaseAdmin.storage().bucket();
+            const fileUpload = bucket.file(fileName);
+
+            const stream = fileUpload.createWriteStream({
+                metadata: {
+                    contentType: file.mimetype
+                }
+            });
+
+            await new Promise((resolve, reject) => {
+                stream.on('error', (error) => {
+                    console.error('Error uploading file:', error);
+                    reject(new BadRequestException('Error uploading file'));
+                });
+
+                stream.on('finish', async () => {
+                    await fileUpload.makePublic();
+                    photoUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+                    resolve(photoUrl);
+                });
+
+                stream.end(file.buffer);
+            });
+        }
         return this.userService.editProfile(userDto);
     }
 
@@ -58,6 +266,57 @@ export class UserController {
             storage : memoryStorage(), //in-memory buffer
         })
     )
+    @ApiOperation({ 
+        summary: 'Change user profile photo',
+        description: 'Changes a user\'s profile photo. Requires authentication.'
+    })
+    @ApiBearerAuth()
+    @ApiConsumes('multipart/form-data')
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID of the user to update',
+        example: 1
+    })
+    @ApiBody({
+        description: 'User profile photo update data',
+        required: false,
+        schema: {
+            type: 'object',
+            properties: {
+                profilePhoto: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'User\'s profile photo (max 5MB, jpg/jpeg/png)'
+                }
+            },
+            required : ['profilePhoto']
+        }
+    })
+    @ApiOkResponse({
+        description: 'Profile photo updated successfully',
+        type: UserDto
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid input data',
+        schema: {
+            example: {
+                statusCode: 400,
+                message: 'Invalid input data',
+                error: 'Bad Request'
+            }
+        }
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized - No valid token provided',
+        schema: {
+            example: {
+                statusCode: 401,
+                message: 'Unauthorized',
+                error: 'Unauthorized'
+            }
+        }
+    })
     async changeProfilePhoto(
         @Param('id' , ParseIntPipe) userId : number,
         @UploadedFile() file?
@@ -109,8 +368,4 @@ export class UserController {
 
         return this.userService.changeProfilePhoto(userId , logoUrl);
     }
-
-    
-
-
 }
