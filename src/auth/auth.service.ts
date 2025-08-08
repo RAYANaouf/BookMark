@@ -103,7 +103,9 @@ export class AuthService{
         const ownedAcademyCount = await this.prisma.userAcademy.count({
             where : {
                 userId : account.user?.id,
-                role : "owner"
+                role: {
+                    name: "owner"
+                }
             }
         })
 
