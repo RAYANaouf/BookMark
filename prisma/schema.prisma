@@ -228,37 +228,6 @@ model EnrollmentRequest {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 model UserAcademy{
   userId  Int
   academyId Int

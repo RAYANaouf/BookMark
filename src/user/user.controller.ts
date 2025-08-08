@@ -11,7 +11,8 @@ import {
     UploadedFile, 
     UseGuards, 
     UseInterceptors,
-    BadRequestException
+    BadRequestException,
+    Request
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -35,6 +36,7 @@ import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/decoretor/get-user.decorator';
 import { UserService } from './user.service';
 import { UserDto } from './dto';
+import { getUserIdFromRequest } from 'src/utils/getUserIdFromRequest';
 
 @ApiTags('Users')
 @Controller('user')
@@ -61,11 +63,17 @@ export class UserController {
                 message: 'Unauthorized',
                 error: 'Unauthorized'
             }
-        }
+        }   
     })
-    getMe(@GetUser() user: any) {
-        return this.userService.getUserById(user.id);
+    getMe(@Request() req) {
+        const userId = getUserIdFromRequest(req)
+        if(userId){
+            return this.userService.getUserById(userId);
+        }else{
+            throw new BadRequestException('User not found');
+        }  
     }
+    
 
     @Get('by-email/:email')
     @ApiOperation({ 

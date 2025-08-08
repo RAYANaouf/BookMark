@@ -24,8 +24,6 @@ export class CourseController {
     }else{
       return this.courseService.getAllCourses(userId)
     }
-    
-
   }
 
 
