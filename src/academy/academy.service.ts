@@ -95,38 +95,98 @@ export class AcademyService {
 
 
 
-    async assignUserToAcademy(userId: number, academyId: number): Promise<boolean> {
+    async assignUserToAcademy(userId: number, academyId: number, roleName: string = 'owner'): Promise<boolean> {
       try {
+        // First, find the role by name
+        const role = await this.prisma.role.findUnique({
+          where: { name: roleName },
+        });
 
+        if (!role) {
+          throw new Error(`Role '${roleName}' not found`);
+        }
+
+        // Check if the user already has this role for this academy
+        const existingAssignment = await this.prisma.userAcademy.findUnique({
+          where: {
+            userId_academyId_roleId : {
+              userId,
+              academyId,
+              roleId:role.id
+            }
+          },
+        });
+
+        if (existingAssignment) {
+          console.warn(`User ${userId} already has role '${roleName}' for academy ${academyId}`);
+          return false;
+        }
+
+        // Create new role assignment
         await this.prisma.userAcademy.create({
           data: { 
             userId,
             academyId,
-            role : "owner"
+            roleId: role.id
           }
         });
+        
+        console.log(`Assigned role '${roleName}' to user ${userId} for academy ${academyId}`);
         return true;
       } catch (error) {
-        if (
-          error.code === "P2002" // Prisma unique constraint violation
-        ) {
-          console.warn("User is already assigned to this academy.");
+        console.error('Error in assignUserToAcademy:', error);
+        if (error.code === 'P2002') { // Prisma unique constraint violation
+          console.warn('Duplicate role assignment detected');
           return false;
         }
-        throw new Error("Failed to assign user to academy.");
+        throw new Error(`Failed to assign user to academy: ${error.message}`);
       }
     }
-    
-    
-    async getAcademiesByUser(userId: number, role?: string) {
+
+    async getUserAcademyRoles(userId: number, academyId: number): Promise<string[]> {
+      const userAcademies = await this.prisma.userAcademy.findMany({
+        where: {
+          userId,
+          academyId,
+        },
+        include: {
+          role: true,
+        },
+      });
+
+      return userAcademies.map(ua => ua.role.name);
+    }
+
+    async hasUserRoleInAcademy(
+      userId: number, 
+      academyId: number, 
+      roleName: string
+    ): Promise<boolean> {
+      const roles = await this.getUserAcademyRoles(userId, academyId);
+      return roles.includes(roleName);
+    }
+
+    async getAcademiesByUser(userId: number, roleName?: string) {
       return this.prisma.academy.findMany({
         where: {
           userLinks: {
             some: {
               userId,
-              ...(role && { role }),
+              ...(roleName && {
+                role: {
+                  name: roleName
+                }
+              }),
             },
           },
+        },
+        include: {
+          userLinks: {
+            where: { userId },
+            include: {
+              role: true
+            }
+          }
         }
       });
     }

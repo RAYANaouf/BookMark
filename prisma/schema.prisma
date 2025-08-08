@@ -54,38 +54,91 @@ model User{
 
   academyLinks UserAcademy[]
   enrollmentRequests EnrollmentRequest[]
+  createAcademyRequest CreateAcademyRequest[]
 }
 
 
 
 model Course {
-  id                Int      @id @default(autoincrement())
+  id                Int       @id @default(autoincrement())
   name              String
   description       String
   coverPhoto        String?
-  targetAudience    String?    // ===> "Beginners", "High School Students" ...
-  prerequisites     String?    // ===>"Basic HTML knowledge", comma-separated or markdown
-  whatYouWillLearn  String?    // ===> markdown or bullet text
-  whatYouCanDoAfter String?    // outcomes: "Build full apps" , create some thing , work on some companies ..., etc.
+  targetAudience    String?    
+  prerequisites     String?    
+  whatYouWillLearn  String?    
+  whatYouCanDoAfter String?    
+  minAge            Int?
+  maxAge            Int?
+  price             Float     @default(0.0)
+  enabled           Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
 
-  minAge Int?
-  maxAge Int?
-
-  price       Float    @default(0.0)
-  enabled     Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-
-
-  academyId   Int 
-  academy     Academy @relation(fields: [academyId] , references: [id])
-
-  // Relations
-  groups      Group[] // people who bought/joined it (organized into study groups)
+  academyId         Int
+  academy           Academy   @relation(fields: [academyId], references: [id])
+  chapters          Chapter[]
+  groups            Group[]
   enrollmentRequests EnrollmentRequest[]
 }
 
+
+model Chapter {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  order       Int
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  courseId    Int
+  course      Course    @relation(fields: [courseId], references: [id])
+  seances     Seance[]
+
+  @@unique([courseId, order])
+}
+
+model Seance {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  order       Int
+  date        DateTime?
+  startTime   DateTime?
+  endTime     DateTime?
+  isOnline    Boolean   @default(false)
+  meetingLink String?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  chapterId   Int
+  chapter     Chapter   @relation(fields: [chapterId], references: [id])
+  supports    Support[]
+  groupId     Int
+  group       Group     @relation(fields: [groupId], references: [id])
+
+  @@unique([chapterId, order])
+}
+
+model Support {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  type        String    // 'video', 'document', 'link', 'exercise', etc.
+  url         String
+  content     String?   // For rich text content (if needed) 
+  isPublished Boolean   @default(false)
+  order       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  seanceId    Int
+  seance      Seance    @relation(fields: [seanceId], references: [id])
+
+  @@unique([seanceId, order])
+}
 
 model Post {
   id          Int      @id @default(autoincrement())
@@ -100,8 +153,6 @@ model Post {
   academy     Academy @relation(fields: [academyId], references: [id])
 }
 
-
-
 model Module{
   id      Int @id @default(autoincrement())
   name    String
@@ -110,32 +161,83 @@ model Module{
   type    String
 
   academies Academy[]
-
   groups Group[]
 }
 
-
-
-
-model Support{
-  id      Int @id @default(autoincrement())
-  title   String
-  url     String
-  type    String
-  seances Seance[]
+model Address {
+  id        Int      @id @default(autoincrement())
+  street    String
+  city      String
+  state     String?
+  country   String
+  postalCode String?
+  latitude  Float?
+  longitude Float?
+  
+  academy   Academy?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Seance{
-  id     Int @id @default(autoincrement())
-  date   DateTime
-  start  DateTime
-  end    DateTime
+model Academy{
+  id         Int      @id @default(autoincrement())
+  name       String
+  logo       String?
+  phone      String?
+  email      String?
+  addressId  Int?     @unique
+  address    Address? @relation(fields: [addressId], references: [id])
+
+  
+  createAcademyRequest CreateAcademyRequest?
 
 
-  groupId Int
-  group Group @relation(fields: [groupId], references: [id])
+  modules    Module[]
+  userLinks  UserAcademy[]
+  courses    Course[]
+  posts      Post[]
+}
 
-  supports Support[]
+model EnrollmentRequest {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  courseId         Int
+  status           String   @default("Pending") // Pending, Approved, Rejected
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User     @relation(fields: [userId], references: [id])
+  courses          Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId]) // prevent duplicate requests
+}
+
+model Role {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  userAcademies UserAcademy[]
+  
+  @@map("roles")
+}
+
+model UserAcademy {
+  userId    Int
+  academyId Int
+  roleId    Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  academy Academy @relation(fields: [academyId], references: [id])
+  role    Role    @relation(fields: [roleId], references: [id])
+
+  @@id([userId, academyId , roleId])
 }
 
 model Group{
@@ -164,81 +266,37 @@ model Exam{
   group    Group @relation(fields: [groupId], references: [id])
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-model Academy{
-  id         Int @id @default(autoincrement())
-  name       String
-  logo       String?
-  phone      String?
-  email      String?
-
-  modules    Module[]
-  userLinks  UserAcademy[]
-  courses    Course[]
-  posts      Post[]
-}
-
-
-model EnrollmentRequest {
-  id               Int      @id @default(autoincrement())
-  userId           Int
-  courseId         Int
-  status           String   @default("Pending") // Pending, Approved, Rejected
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  user             User     @relation(fields: [userId], references: [id])
-  courses          Course   @relation(fields: [courseId], references: [id])
-
-  @@unique([userId, courseId]) // prevent duplicate requests
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-model UserAcademy{
-  userId  Int
-  academyId Int
-  role String? //admin , owner , employee...
+model CreateAcademyRequest {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  logo        String?
+  phone       String?
+  email       String?
   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields : [userId] , references : [id])
-  academy Academy @relation(fields: [academyId] , references: [id])
-
-  @@id([userId , academyId])
+  // Address fields
+  street      String
+  city        String
+  state       String?
+  country     String
+  postalCode  String?
+  
+  // Request status
+  status      String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  rejectedReason String?
+  
+  // Requester info
+  requesterId Int
+  requester   User      @relation(fields: [requesterId], references: [id])
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  
+  // If approved, link to the created academy
+  academyId   Int?      @unique
+  academy     Academy?  @relation(fields: [academyId], references: [id])
+  
+  // Ensure a user can't have multiple pending requests for the same academy name
+  @@unique([requesterId, name], name: "user_academy_name")
 }
-
