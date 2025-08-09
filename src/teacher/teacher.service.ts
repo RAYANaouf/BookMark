@@ -13,7 +13,9 @@ export class TeacherService {
             where: {
                 academyLinks: {
                     some: {
-                        role: 'Teacher'
+                        role: {
+                            name: "Teacher"
+                        }
                     }
                 }
             },
@@ -23,7 +25,7 @@ export class TeacherService {
                 lastName: true,
                 profilePhoto: true,
                 academyLinks: {
-                    where: { role: 'Teacher' },
+                    where: { role: { name: "Teacher" } },
                     select: {
                         academy: {
                             select: {
@@ -44,7 +46,9 @@ export class TeacherService {
                 academyLinks: {
                     some: {
                         academyId,
-                        role: 'Teacher'
+                        role: {
+                            name: "Teacher"
+                        }
                     }
                 }
             },
@@ -56,7 +60,9 @@ export class TeacherService {
                 academyLinks: {
                     where: { 
                         academyId,
-                        role: 'Teacher' 
+                        role: {
+                            name: "Teacher"
+                        } 
                     },
                     select: {
                         role: true,
@@ -78,41 +84,52 @@ export class TeacherService {
         const user = await this.prisma.user.findUnique({
             where: { id: dto.userId }
         });
-
+    
         if (!user) {
             throw new ForbiddenException('User not found');
         }
-
+    
         // Check if the academy exists
         const academy = await this.prisma.academy.findUnique({
             where: { id: dto.academyId }
         });
-
+    
         if (!academy) {
             throw new ForbiddenException('Academy not found');
         }
-
-        // Check if the user already has a Teacher role in this academy
-        const existingTeacherLink = await this.prisma.userAcademy.findFirst({
-            where: {
-                userId: dto.userId,
-                academyId: dto.academyId,
-                role: 'Teacher'
+    
+        // First, find or create the Teacher role
+        const teacherRole = await this.prisma.role.upsert({
+            where: { name: "Teacher" },
+            update: {}, // if exists, do nothing
+            create: { 
+                name: "Teacher",
+                description: "Teacher role with permissions to teache courses to students"
             }
         });
-
+    
+        // Check if the user already has a Teacher role in this academy
+        const existingTeacherLink = await this.prisma.userAcademy.findUnique({
+            where: {
+                userId_academyId_roleId : {
+                    userId: dto.userId,
+                    academyId: dto.academyId,
+                    roleId: teacherRole.id
+                }
+            }
+        });
+    
         // If user already has Teacher role, return the existing link
         if (existingTeacherLink) {
             return existingTeacherLink;
         }
-
+    
         // Create a new user-academy link with Teacher role
-        // This allows the user to have multiple roles (e.g., Teacher and Owner) for the same academy
         return this.prisma.userAcademy.create({
             data: {
                 userId: dto.userId,
                 academyId: dto.academyId,
-                role: 'Teacher'
+                roleId: teacherRole.id
             }
         });
     }
@@ -123,7 +140,9 @@ export class TeacherService {
             where: {
                 userId: dto.userId,
                 academyId: dto.academyId,
-                role: 'Teacher'
+                role: {
+                    name: "Teacher"
+                }
             }
         });
 
@@ -134,10 +153,10 @@ export class TeacherService {
         // Delete the teacher role for this user and academy
         return this.prisma.userAcademy.delete({
             where: {
-                role : 'Teacher',
-                userId_academyId: {
+                userId_academyId_roleId : {
                     userId: dto.userId,
                     academyId: dto.academyId,
+                    roleId : teacherLink.roleId
                 }
             }
         });

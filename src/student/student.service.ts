@@ -9,16 +9,5 @@ export class StudentService {
 
     }
 
-    async getAllStudentByAcademyId( id : number){
-        return this.prisma.user.findMany({
-            where : {
-                academyLinks : {
-                    some : {
-                        academyId : id,
-                        role      : "Student"
-                    }
-                }
-            }
-        })
-    }
+   
 }
