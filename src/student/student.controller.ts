@@ -8,9 +8,5 @@ export class StudentController {
 
     }
 
-    @Get("academy/:id")
-    getAllStudentByAcademyId(@Param("id" , ParseIntPipe) id : number){
-        return this.studentService.getAllStudentByAcademyId(id);
-    }
 
 }
