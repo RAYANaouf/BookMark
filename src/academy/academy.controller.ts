@@ -92,15 +92,15 @@ export class AcademyController {
             return this.academyService.createAcademy(academy , logoUrl)
         }
 
-
-
-
-
-
-
-
-
-
+        @Post(":id/assign-role")
+        @HttpCode(HttpStatus.CREATED)
+        async assignRoleToUser(
+            @Param("id", ParseIntPipe) academyId: number,
+            @Body() assignRoleDto: { userId: number; roleName: string }
+        ) {
+            const { userId, roleName } = assignRoleDto;
+            return await this.academyService.assignUserToAcademy(userId, academyId, roleName);
+        }
 
         @Get("user/:userId")
         getAcademiesByUser(
