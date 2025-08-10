@@ -15,7 +15,6 @@ export class RoleController {
     description: 'Creates a new role with the provided details. Role names must be unique.'
   })
   @ApiBody({ 
-    type: CreateRoleDto,
     description: 'Role details',
     schema: {
       example: {
@@ -27,7 +26,6 @@ export class RoleController {
   @ApiResponse({ 
     status: HttpStatus.CREATED, 
     description: 'The role has been successfully created.',
-    type: CreateRoleDto,
     schema: {
       example: {
         id: 1,
