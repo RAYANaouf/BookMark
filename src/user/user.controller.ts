@@ -30,7 +30,8 @@ import {
     ApiOkResponse,
     ApiNotFoundResponse,
     ApiBadRequestResponse,
-    ApiUnauthorizedResponse
+    ApiUnauthorizedResponse,
+    ApiHeader
 } from '@nestjs/swagger';
 import { JwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/decoretor/get-user.decorator';
@@ -48,15 +49,35 @@ export class UserController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ 
         summary: 'Get current user profile',
-        description: 'Retrieves the profile of the currently authenticated user.'
+        description: 'Retrieves the profile of the currently authenticated user. Requires a valid JWT token in the Authorization header.'
     })
-    @ApiBearerAuth()
+    @ApiBearerAuth('JWT-auth')
+    @ApiHeader({
+        name: 'Authorization',
+        description: 'JWT token',
+        required: true,
+        schema: {
+            type: 'string',
+            default: 'Bearer your-jwt-token-here'
+        }
+    })
     @ApiOkResponse({
         description: 'Successfully retrieved user profile',
-        type: UserDto
+        schema: {
+            example: {
+                id: 1,
+                email: 'user@example.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                profilePhoto: 'https://example.com/profile.jpg',
+                isSuperAdmin: false,
+                createdAt: '2025-01-01T00:00:00.000Z',
+                updatedAt: '2025-01-01T00:00:00.000Z'
+            }
+        }
     })
     @ApiUnauthorizedResponse({
-        description: 'Unauthorized - No valid token provided',
+        description: 'Unauthorized - No valid token provided or token expired',
         schema: {
             example: {
                 statusCode: 401,
@@ -65,11 +86,11 @@ export class UserController {
             }
         }   
     })
-    getMe(@Request() req) {
-        const userId = getUserIdFromRequest(req)
-        if(userId){
+    async getMe(@Request() req) {
+        const userId = getUserIdFromRequest(req);
+        if (userId) {
             return this.userService.getUserById(userId);
-        }else{
+        } else {
             throw new BadRequestException('User not found');
         }  
     }
