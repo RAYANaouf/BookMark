@@ -57,13 +57,8 @@ export class AcademyController {
             schema: {
                 type: 'object',
                 properties: {
-                    academy: {
-                        type: 'object',
-                        properties: {
-                            name: { type: 'string' },
-                            logo: { type: 'string', format: 'binary' }
-                        },
-                    },
+                    name: { type: 'string' },
+                    logo: { type: 'string', format: 'binary' }
                 },
             },
         })
