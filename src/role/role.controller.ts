@@ -43,7 +43,15 @@ export class RoleController {
   @Put(':id')
   @ApiOperation({ summary: 'Update a role' })
   @ApiParam({ name: 'id', description: 'Role ID' })
-  @ApiBody({ type: UpdateRoleDto })
+  @ApiBody({ 
+    description: 'Role details',
+    schema: {
+      example: {
+        name: 'owner',
+        description: 'the owner of the academy'
+      }
+    }
+   })
   @ApiResponse({ status: HttpStatus.OK, description: 'The role has been successfully updated.' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Role with this name already exists.' })
