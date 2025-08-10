@@ -17,34 +17,26 @@ export class RoleController {
   @ApiBody({ 
     type: CreateRoleDto,
     description: 'Role details',
-    examples: {
-      basic: {
-        summary: 'Basic role creation',
-        value: {
-          name: 'editor',
-          description: 'Can edit content but not manage users'
-        }
-      },
-      minimal: {
-        summary: 'Minimal role',
-        value: {
-          name: 'viewer'
-        }
+    schema: {
+      example: {
+        name: 'owner',
+        description: 'the owner of the academy'
       }
     }
   })
   @ApiResponse({ 
     status: HttpStatus.CREATED, 
     description: 'The role has been successfully created.',
-    type: CreateRoleDto
-  })
-  @ApiResponse({ 
-    status: HttpStatus.CONFLICT, 
-    description: 'A role with this name already exists.'
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input. Name is required and must be a string.'
+    type: CreateRoleDto,
+    schema: {
+      example: {
+        id: 1,
+        name: 'owner',
+        description: 'the owner of the academy',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-01-01T00:00:00.000Z'
+      }
+    }
   })
   async create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
