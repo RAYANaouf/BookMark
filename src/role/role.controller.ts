@@ -62,7 +62,7 @@ export class RoleController {
     return this.roleService.update(id, updateRoleDto);
   }
 
-  @Get()
+  @Get("all")
   @ApiOperation({ summary: 'Get all roles' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Return all roles.' })
   async findAll() {
