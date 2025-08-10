@@ -9,7 +9,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
-  @Post()
+  @Post("create")
   @ApiOperation({ 
     summary: 'Create a new role',
     description: 'Creates a new role with the provided details. Role names must be unique.'
