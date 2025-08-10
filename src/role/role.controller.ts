@@ -1,4 +1,50 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { RoleService } from './role.service';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
-@Controller('role')
-export class RoleController {}
+@ApiTags('roles')
+@Controller('roles')
+export class RoleController {
+  constructor(private readonly roleService: RoleService) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Create a new role' })
+  @ApiBody({ type: CreateRoleDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'The role has been successfully created.' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Role with this name already exists.' })
+  async create(@Body() createRoleDto: CreateRoleDto) {
+    return this.roleService.create(createRoleDto);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a role' })
+  @ApiParam({ name: 'id', description: 'Role ID' })
+  @ApiBody({ type: UpdateRoleDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'The role has been successfully updated.' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Role with this name already exists.' })
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateRoleDto: UpdateRoleDto,
+  ) {
+    return this.roleService.update(id, updateRoleDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all roles' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Return all roles.' })
+  async findAll() {
+    return this.roleService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a role by ID' })
+  @ApiParam({ name: 'id', description: 'Role ID' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Return the role.' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.roleService.findOne(id);
+  }
+}
