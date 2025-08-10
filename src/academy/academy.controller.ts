@@ -88,7 +88,6 @@ export class AcademyController {
                     
                 })   
             }
-            
             return this.academyService.createAcademy(academy , logoUrl)
         }
 

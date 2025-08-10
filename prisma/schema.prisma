@@ -75,6 +75,10 @@ model Course {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now()) @updatedAt
 
+
+  moduleId Int
+  module Module @relation(fields: [moduleId], references: [id])
+  
   academyId         Int
   academy           Academy   @relation(fields: [academyId], references: [id])
   chapters          Chapter[]
@@ -94,30 +98,22 @@ model Chapter {
 
   courseId    Int
   course      Course    @relation(fields: [courseId], references: [id])
-  seances     Seance[]
+  sections     Section[]
 
   @@unique([courseId, order])
 }
 
-model Seance {
+model Section {
   id          Int       @id @default(autoincrement())
-  title       String
+  name       String
   description String?
   order       Int
-  date        DateTime?
-  startTime   DateTime?
-  endTime     DateTime?
-  isOnline    Boolean   @default(false)
-  meetingLink String?
-  isPublished Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   chapterId   Int
   chapter     Chapter   @relation(fields: [chapterId], references: [id])
   supports    Support[]
-  groupId     Int
-  group       Group     @relation(fields: [groupId], references: [id])
 
   @@unique([chapterId, order])
 }
@@ -134,10 +130,10 @@ model Support {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  seanceId    Int
-  seance      Seance    @relation(fields: [seanceId], references: [id])
+  sectionId    Int
+  section      Section    @relation(fields: [sectionId], references: [id])
 
-  @@unique([seanceId, order])
+  @@unique([sectionId, order])
 }
 
 model Post {
@@ -161,7 +157,7 @@ model Module{
   type    String
 
   academies Academy[]
-  groups Group[]
+  courses Course[]
 }
 
 model Address {
@@ -188,10 +184,8 @@ model Academy{
   email      String?
   addressId  Int?     @unique
   address    Address? @relation(fields: [addressId], references: [id])
-
   
   createAcademyRequest CreateAcademyRequest?
-
 
   modules    Module[]
   userLinks  UserAcademy[]
@@ -244,10 +238,6 @@ model Group{
   id     Int @id @default(autoincrement())
   name   String
 
-  moduleId Int
-  module Module @relation(fields: [moduleId], references: [id])
-
-  seances  Seance[]
   exams    Exam[]
 
 
