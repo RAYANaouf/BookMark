@@ -10,10 +10,42 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new role' })
-  @ApiBody({ type: CreateRoleDto })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'The role has been successfully created.' })
-  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Role with this name already exists.' })
+  @ApiOperation({ 
+    summary: 'Create a new role',
+    description: 'Creates a new role with the provided details. Role names must be unique.'
+  })
+  @ApiBody({ 
+    type: CreateRoleDto,
+    description: 'Role details',
+    examples: {
+      basic: {
+        summary: 'Basic role creation',
+        value: {
+          name: 'editor',
+          description: 'Can edit content but not manage users'
+        }
+      },
+      minimal: {
+        summary: 'Minimal role',
+        value: {
+          name: 'viewer'
+        }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: HttpStatus.CREATED, 
+    description: 'The role has been successfully created.',
+    type: CreateRoleDto
+  })
+  @ApiResponse({ 
+    status: HttpStatus.CONFLICT, 
+    description: 'A role with this name already exists.'
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input. Name is required and must be a string.'
+  })
   async create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
