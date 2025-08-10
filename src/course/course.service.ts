@@ -19,6 +19,9 @@ export class CourseService {
                 minAge            : dto.minAge,
                 maxAge            : dto.maxAge,
                 coverPhoto        : coverPhotoUrl,
+                module: {
+                    connect: { id: dto.academyId }
+                },
                 academy: {
                   connect: { id: dto.academyId } 
                 }
