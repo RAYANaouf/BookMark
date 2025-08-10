@@ -6,7 +6,7 @@ import { memoryStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname, resolve } from 'path';
 import * as firebaseAdmin from 'firebase-admin';
-import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 
 @Controller('academy')
@@ -35,11 +35,29 @@ export class AcademyController {
 
 
         @Post(":id/add-owner")
+        @ApiOperation({ summary: 'Add an owner to an academy' })
+        @ApiParam({ name: 'id', description: 'Academy ID' })
+        @ApiBody({
+            schema: {
+                type: 'object',
+                required: ['userId'],
+                properties: {
+                    userId: { 
+                        type: 'number',
+                        description: 'ID of the user to add as an owner',
+                        example: 1
+                    }
+                }
+            }
+        })
+        @ApiResponse({ status: 200, description: 'Owner added successfully' })
+        @ApiResponse({ status: 400, description: 'Invalid input' })
+        @ApiResponse({ status: 404, description: 'Academy or User not found' })
         async addAcademyOwner(
-            @Param("id" , ParseIntPipe) id : number,
-            @Body('userId') userId : string
-        ){
-            return await this.academyService.assignUserToAcademy(parseInt(userId) , id)
+            @Param("id", ParseIntPipe) id: number,
+            @Body('userId', ParseIntPipe) userId: number
+        ) {
+            return await this.academyService.assignUserToAcademy(userId, id);
         }
 
         
@@ -58,7 +76,11 @@ export class AcademyController {
                 type: 'object',
                 properties: {
                     name: { type: 'string' },
-                    logo: { type: 'string', format: 'binary' }
+                    logo: { 
+                        type: 'string', 
+                        format: 'binary',
+                        description: 'Logo file (optional)'
+                    }
                 },
             },
         })
