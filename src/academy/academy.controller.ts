@@ -6,6 +6,7 @@ import { memoryStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname, resolve } from 'path';
 import * as firebaseAdmin from 'firebase-admin';
+import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 
 
 @Controller('academy')
@@ -50,6 +51,22 @@ export class AcademyController {
                 limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
             })
         )
+        @ApiOperation({ summary: 'Create a new academy' })
+        @ApiConsumes('multipart/form-data')
+        @ApiBody({
+            schema: {
+                type: 'object',
+                properties: {
+                    academy: {
+                        type: 'object',
+                        properties: {
+                            name: { type: 'string' },
+                            logo: { type: 'string', format: 'binary' }
+                        },
+                    },
+                },
+            },
+        })
         async createAcademy(
             @Body() academy : CreateAcademyDto,
             @UploadedFile() file? 

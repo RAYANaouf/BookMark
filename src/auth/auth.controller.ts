@@ -26,8 +26,8 @@ export class AuthController {
                 user: {
                     id: 1,
                     email: 'user@example.com',
-                    firstName: 'John',
-                    lastName: 'Doe'
+                    firstName: 'Rayan',
+                    lastName: 'Aouf'
                 }
             }
         }
@@ -57,8 +57,8 @@ export class AuthController {
                 user: {
                     id: 1,
                     email: 'user@example.com',
-                    firstName: 'John',
-                    lastName: 'Doe'
+                    firstName: 'Rayan',
+                    lastName: 'Aouf'
                 }
             }
         }
