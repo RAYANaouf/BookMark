@@ -208,15 +208,13 @@ model EnrollmentRequest {
 }
 
 model Role {
-  id          Int           @id @default(autoincrement())
-  name        String        @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
   userAcademies UserAcademy[]
-  
-  @@map("roles")
 }
 
 model UserAcademy {
