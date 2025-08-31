@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -76,5 +76,42 @@ export class RoleController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Role not found.' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.roleService.findOne(id);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ 
+    summary: 'Delete a role',
+    description: 'Deletes a role by ID. This operation is irreversible.'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'ID of the role to delete',
+    type: 'number' 
+  })
+  @ApiResponse({ 
+    status: HttpStatus.OK, 
+    description: 'The role has been successfully deleted.',
+    schema: {
+      example: {
+        message: 'Role deleted successfully',
+        deletedRole: {
+          id: 1,
+          name: 'owner',
+          description: 'the owner of the academy',
+          deletedAt: '2025-01-01T00:00:00.000Z'
+        }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: HttpStatus.NOT_FOUND, 
+    description: 'Role not found.' 
+  })
+  @ApiResponse({ 
+    status: HttpStatus.CONFLICT, 
+    description: 'Cannot delete role because it is assigned to users.'
+  })
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.roleService.remove(id);
   }
 }

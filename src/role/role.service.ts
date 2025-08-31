@@ -70,4 +70,37 @@ export class RoleService {
   async findAll() {
     return this.prisma.role.findMany();
   }
+
+  async remove(id: number) {
+    // Check if role exists
+    const role = await this.prisma.role.findUnique({
+      where: { id },
+    });
+
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${id} not found`);
+    }
+
+    // Check if role is assigned to any user in any academy
+    const userAcademyWithRole = await this.prisma.userAcademy.findFirst({
+      where: { roleId: id },
+    });
+
+    if (userAcademyWithRole) {
+      throw new ConflictException('Cannot delete role because it is assigned to one or more users in academies');
+    }
+
+    // Delete the role
+    const deletedRole = await this.prisma.role.delete({
+      where: { id },
+    });
+
+    return {
+      message: 'Role deleted successfully',
+      deletedRole: {
+        ...deletedRole,
+        deletedAt: new Date().toISOString()
+      }
+    };
+  }
 }
