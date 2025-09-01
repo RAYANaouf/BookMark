@@ -10,6 +10,7 @@ import * as firebaseAdmin from 'firebase-admin';
 import { JwtGuard } from 'src/auth/guard';
 import { request } from 'http';
 import { getUserIdFromRequest } from 'src/utils/getUserIdFromRequest';
+import { BadRequestException } from '@nestjs/common';
 
 @ApiTags('courses')
 @Controller('course')
@@ -30,162 +31,151 @@ export class CourseController {
 
 
 
+  @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  @Post("create")
   @ApiOperation({ 
     summary: 'Create a new course',
-    description: 'Creates a new course with the provided details. Supports optional cover photo upload.'
+    description: 'Creates a new course with the provided details. Supports both JSON and form-data formats.'
   })
-  @ApiConsumes('multipart/form-data')
+  @ApiConsumes('application/json', 'multipart/form-data')
   @ApiBody({
     description: 'Course data and optional cover photo',
     schema: {
-      type: 'object',
-      required: ['academyId', 'moduleId', 'name', 'description'],
-      properties: {
-        cover: {
-          type: 'string',
-          format: 'binary',
-          description: 'Course cover photo (optional, max 5MB)'
+      oneOf: [
+        {
+          type: 'object',
+          properties: {
+            cover: {
+              type: 'string',
+              format: 'binary',
+              description: 'Course cover photo (optional, max 5MB)'
+            },
+            academyId: { 
+              type: 'number',
+              example: 1,
+              description: 'ID of the academy this course belongs to'
+            },
+            moduleId: {
+              type: 'number',
+              example: 1,
+              description: 'ID of the module this course belongs to'
+            },
+            name: {
+              type: 'string',
+              example: 'Advanced Web Development',
+              description: 'Name of the course'
+            },
+            description: {
+              type: 'string',
+              example: 'Learn advanced web development concepts and best practices',
+              description: 'Detailed description of the course'
+            },
+            targetAudience: {
+              type: 'string',
+              example: 'Intermediate web developers',
+              description: 'Intended audience for this course',
+            },
+            prerequisites: {
+              type: 'string',
+              example: 'Basic knowledge of HTML, CSS, and JavaScript',
+              description: 'Prerequisites for taking this course',
+            },
+            whatYouWillLearn: {
+              type: 'string',
+              example: 'Advanced React patterns, Performance optimization, State management',
+              description: 'Key learning outcomes',
+            },
+            whatYouCanDoAfter: {
+              type: 'string',
+              example: 'Build complex web applications, Optimize performance, Implement best practices',
+              description: 'Skills gained after completing the course',
+            },
+            minAge: {
+              type: 'number',
+              example: 16,
+              description: 'Minimum age requirement',
+            },
+            maxAge: {
+              type: 'number',
+              example: 99,
+              description: 'Maximum age limit',
+            },
+            price: {
+              type: 'number',
+              example: 99.99,
+              description: 'Course price',
+            },
+            chapters: {
+              type: 'string',
+              description: 'JSON string of chapters array',
+              example: JSON.stringify([{
+                name: 'Introduction',
+                description: 'Course overview',
+                order: 1
+              }])
+            }
+          }
         },
-        academyId: { 
-          type: 'number',
-          example: 1,
-          description: 'ID of the academy this course belongs to'
-        },
-        moduleId: {
-          type: 'number',
-          example: 1,
-          description: 'ID of the module this course belongs to'
-        },
-        name: {
-          type: 'string',
-          example: 'Advanced Web Development',
-          description: 'Name of the course'
-        },
-        description: {
-          type: 'string',
-          example: 'Learn advanced web development concepts and best practices',
-          description: 'Detailed description of the course'
-        },
-        targetAudience: {
-          type: 'string',
-          example: 'Intermediate web developers',
-          description: 'Intended audience for this course',
-        },
-        prerequisites: {
-          type: 'string',
-          example: 'Basic knowledge of HTML, CSS, and JavaScript',
-          description: 'Prerequisites for taking this course',
-        },
-        whatYouWillLearn: {
-          type: 'string',
-          example: 'Advanced React patterns, Performance optimization, State management',
-          description: 'Key learning outcomes',
-        },
-        whatYouCanDoAfter: {
-          type: 'string',
-          example: 'Build complex web applications, Optimize performance, Implement best practices',
-          description: 'Skills gained after completing the course',
-        },
-        minAge: {
-          type: 'number',
-          example: 16,
-          description: 'Minimum age requirement',
-        },
-        maxAge: {
-          type: 'number',
-          example: 99,
-          description: 'Maximum age limit',
-        },
-        price: {
-          type: 'number',
-          example: 99.99,
-          description: 'Course price',
-        },
-        chapters: {
-          type: 'array',
-          items: {
-            type: 'object',
-            required: ['name', 'order'],
-            properties: {
-              name: {
-                type: 'string',
-                example: 'Introduction to Advanced Concepts'
-              },
-              description: {
-                type: 'string',
-                example: 'Overview of what we\'ll cover'
-              },
-              order: {
-                type: 'number',
-                example: 1
+        {
+          type: 'object',
+          properties: {
+            academyId: { type: 'number' },
+            moduleId: { type: 'number' },
+            name: { type: 'string' },
+            description: { type: 'string' },
+            targetAudience: { type: 'string' },
+            prerequisites: { type: 'string' },
+            whatYouWillLearn: { type: 'string' },
+            whatYouCanDoAfter: { type: 'string' },
+            minAge: { type: 'number' },
+            maxAge: { type: 'number' },
+            price: { type: 'number' },
+            chapters: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  description: { type: 'string' },
+                  order: { type: 'number' }
+                }
               }
             }
-          },
-          description: 'List of chapters for the course'
-        }
-      }
-    }
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'The course has been successfully created.',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 1 },
-        name: { type: 'string', example: 'Advanced Web Development' },
-        description: { type: 'string', example: 'Learn advanced web development concepts' },
-        coverPhoto: { 
-          type: 'string', 
-          example: 'https://storage.googleapis.com/...',
-          nullable: true 
-        },
-        chapters: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number', example: 1 },
-              name: { type: 'string', example: 'Introduction' },
-              description: { type: 'string', example: 'Course introduction', nullable: true },
-              order: { type: 'number', example: 1 },
-              isPublished: { type: 'boolean', example: false },
-              createdAt: { type: 'string', format: 'date-time' },
-              updatedAt: { type: 'string', format: 'date-time' }
-            }
-          }
-        },
-        academy: {
-          type: 'object',
-          properties: {
-            id: { type: 'number', example: 1 },
-            name: { type: 'string', example: 'Tech Academy' }
-          }
-        },
-        module: {
-          type: 'object',
-          properties: {
-            id: { type: 'number', example: 1 },
-            name: { type: 'string', example: 'Web Development' }
           }
         }
-      }
+      ]
     }
   })
   @UseInterceptors(
-    FileInterceptor("cover",{
-      storage : memoryStorage(), //in-memory buffer
-      limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
+    FileInterceptor('cover', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
     })
   )
-    async create(
-      @Body() dto: CreateCourseDto,
-      @UploadedFile() file? 
+  async create(
+    @Body() dto: any,
+    @UploadedFile() file?: Express.Multer.File
   ) {
+    let courseData = dto;
+    
+    if (typeof dto.chapters === 'string') {
+      try {
+        courseData = {
+          ...dto,
+          chapters: JSON.parse(dto.chapters)
+        };
+      } catch (e) {
+        throw new BadRequestException('Invalid chapters format. Must be a valid JSON string');
+      }
+    }
 
-    console.log("create course  ====>> " , dto)
+    if (courseData.academyId) courseData.academyId = +courseData.academyId;
+    if (courseData.moduleId) courseData.moduleId = +courseData.moduleId;
+    if (courseData.price) courseData.price = +courseData.price;
+    if (courseData.minAge) courseData.minAge = +courseData.minAge;
+    if (courseData.maxAge) courseData.maxAge = +courseData.maxAge;
+
+    console.log('create course ====>>', courseData);
 
     let coverPhotoUrl : string | null = null ;
 
@@ -217,8 +207,8 @@ export class CourseController {
       })
     }
 
-    console.log("create course  ====>> " , dto)
-    return this.courseService.create(dto , coverPhotoUrl ?? undefined);
+    console.log("create course  ====>> " , courseData)
+    return this.courseService.create(courseData , coverPhotoUrl ?? undefined);
   }
 
   
