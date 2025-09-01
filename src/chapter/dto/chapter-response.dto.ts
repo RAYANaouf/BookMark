@@ -13,9 +13,6 @@ export class ChapterResponseDto {
   @ApiProperty({ example: 1 })
   order: number;
 
-  @ApiProperty({ example: false })
-  isPublished: boolean;
-
   @ApiProperty({ example: 1 })
   courseId: number;
 
