@@ -185,6 +185,8 @@ export class CourseController {
       @UploadedFile() file? 
   ) {
 
+    console.log("create course  ====>> " , dto)
+
     let coverPhotoUrl : string | null = null ;
 
     if(file){
