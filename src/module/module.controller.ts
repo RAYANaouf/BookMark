@@ -19,7 +19,6 @@ export class ModuleController {
     schema: {
       example: {
         name: 'user-management',
-        description: 'User management module'
       }
     }
   })
@@ -39,7 +38,6 @@ export class ModuleController {
     schema: {
       example: {
         name: 'user-management',
-        description: 'Updated user management module'
       }
     }
   })
@@ -88,7 +86,6 @@ export class ModuleController {
         deletedModule: {
           id: 1,
           name: 'user-management',
-          description: 'User management module',
           createdAt: '2025-01-01T00:00:00.000Z',
           updatedAt: '2025-01-01T00:00:00.000Z'
         }
