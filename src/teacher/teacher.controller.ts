@@ -22,8 +22,4 @@ export class TeacherController {
     }
 
 
-    @Delete('remove-from-academy')
-    async removeTeacherFromAcademy(@Body() dto: RemoveTeacherDto) {
-        return this.teacherService.removeTeacherFromAcademy(dto);
-    }
 }

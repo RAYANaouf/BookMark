@@ -79,32 +79,4 @@ export class TeacherService {
         });
     }
 
-
-    async removeTeacherFromAcademy(dto: RemoveTeacherDto) {
-        // Check if the teacher exists in the academy
-        const teacherLink = await this.prisma.userAcademy.findFirst({
-            where: {
-                userId: dto.userId,
-                academyId: dto.academyId,
-                role: {
-                    name: "Teacher"
-                }
-            }
-        });
-
-        if (!teacherLink) {
-            throw new ForbiddenException('Teacher not found in this academy');
-        }
-
-        // Delete the teacher role for this user and academy
-        return this.prisma.userAcademy.delete({
-            where: {
-                userId_academyId_roleId : {
-                    userId: dto.userId,
-                    academyId: dto.academyId,
-                    roleId : teacherLink.roleId
-                }
-            }
-        });
-    }
 }
