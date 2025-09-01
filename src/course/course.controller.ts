@@ -1,5 +1,5 @@
 import { Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, Param, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -11,6 +11,8 @@ import { JwtGuard } from 'src/auth/guard';
 import { request } from 'http';
 import { getUserIdFromRequest } from 'src/utils/getUserIdFromRequest';
 import { BadRequestException } from '@nestjs/common';
+import { ParseIntPipe } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 @ApiTags('courses')
 @Controller('course')
@@ -28,6 +30,8 @@ export class CourseController {
       return this.courseService.getAllCourses(userId)
     }
   }
+
+  
 
 
 
@@ -217,4 +221,90 @@ export class CourseController {
     return this.courseService.findByAcademy(Number(academyId));
   }
 
+  @Get(':id')
+  @ApiOperation({ 
+    summary: 'Get course details by ID',
+    description: 'Retrieves detailed information about a specific course including its chapters.'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the course to retrieve',
+    type: 'number',
+    required: true,
+    example: 1
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Course details retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 1 },
+        name: { type: 'string', example: 'Advanced Web Development' },
+        description: { type: 'string', example: 'Learn advanced web development concepts' },
+        coverPhoto: { 
+          type: 'string', 
+          example: 'https://storage.googleapis.com/...',
+          nullable: true 
+        },
+        targetAudience: { type: 'string', example: 'Intermediate developers', nullable: true },
+        prerequisites: { type: 'string', example: 'Basic web development knowledge', nullable: true },
+        whatYouWillLearn: { type: 'string', example: 'Advanced concepts and best practices', nullable: true },
+        whatYouCanDoAfter: { type: 'string', example: 'Build complex applications', nullable: true },
+        minAge: { type: 'number', example: 16, nullable: true },
+        maxAge: { type: 'number', example: 99, nullable: true },
+        price: { type: 'number', example: 99.99, nullable: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        chapters: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', example: 1 },
+              name: { type: 'string', example: 'Introduction' },
+              description: { type: 'string', example: 'Course introduction', nullable: true },
+              order: { type: 'number', example: 1 },
+              isPublished: { type: 'boolean', example: false },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' }
+            }
+          }
+        },
+        academy: {
+          type: 'object',
+          properties: {
+            id: { type: 'number', example: 1 },
+            name: { type: 'string', example: 'Tech Academy' }
+          }
+        },
+        module: {
+          type: 'object',
+          properties: {
+            id: { type: 'number', example: 1 },
+            name: { type: 'string', example: 'Web Development' }
+          }
+        }
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Course not found',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 404 },
+        message: { type: 'string', example: 'Course not found' },
+        error: { type: 'string', example: 'Not Found' }
+      }
+    }
+  })
+  async getCourseDetails(@Param('id', ParseIntPipe) id: number) {
+    const course = await this.courseService.getCourseDetails(id);
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    return course;
+  }
 }

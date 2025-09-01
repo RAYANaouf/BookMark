@@ -45,11 +45,11 @@ export class CourseService {
                 ));
             }
 
-            return this.getCourseWithChapters(course.id);
+            return this.getCourseDetails(course.id);
         });
     }
 
-    private async getCourseWithChapters(courseId: number) {
+    async getCourseDetails(courseId: number) {
         return this.prisma.course.findUnique({
             where: { id: courseId },
             include: {
