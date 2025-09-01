@@ -14,6 +14,7 @@ import { EnrollmentRequestModule } from './enrollment-request/enrollment-request
 import { TeacherModule } from './teacher/teacher.module';
 import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
+import { ChapterModule } from './chapter/chapter.module';
 
 @Module({
   imports: [ 
@@ -23,7 +24,7 @@ import { ModuleModule } from './module/module.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, 
   ],
   controllers : [AppController, PostController]
 })
