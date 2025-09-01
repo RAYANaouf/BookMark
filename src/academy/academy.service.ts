@@ -95,7 +95,7 @@ export class AcademyService {
 
 
 
-    async assignUserToAcademy(userId: number, academyId: number, roleName: string = 'owner'): Promise<boolean> {
+    async assignUserToAcademy(userId: number, academyId: number, roleName: string = 'manager'): Promise<boolean> {
       try {
         // First, find the role by name
         const role = await this.prisma.role.findUnique({

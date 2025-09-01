@@ -152,11 +152,7 @@ model Post {
 model Module{
   id      Int @id @default(autoincrement())
   name    String
-  year    Int
-  branch  String
-  type    String
 
-  academies Academy[]
   courses Course[]
 }
 
@@ -187,7 +183,6 @@ model Academy{
   
   createAcademyRequest CreateAcademyRequest?
 
-  modules    Module[]
   userLinks  UserAcademy[]
   courses    Course[]
   posts      Post[]
