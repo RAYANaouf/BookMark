@@ -60,7 +60,6 @@ export class CourseService {
                         name: true,
                         description: true,
                         order: true,
-                        isPublished: true,
                         createdAt: true,
                         updatedAt: true
                     }
