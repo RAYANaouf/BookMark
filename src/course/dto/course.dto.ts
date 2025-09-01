@@ -53,5 +53,6 @@ export class CreateCourseDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateChapterDto)
-  chapters: CreateChapterDto[];
+  @IsOptional()  // Add this decorator
+  chapters?: CreateChapterDto[];  // Make it optional with ?
 }
