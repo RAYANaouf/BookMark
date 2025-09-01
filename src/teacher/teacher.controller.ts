@@ -21,10 +21,6 @@ export class TeacherController {
         return this.teacherService.getTeachersByAcademy(academyId);
     }
 
-    @Post('add-to-academy')
-    async addTeacherToAcademy(@Body() dto: AddTeacherDto) {
-        return this.teacherService.addTeacherToAcademy(dto);
-    }
 
     @Delete('remove-from-academy')
     async removeTeacherFromAcademy(@Body() dto: RemoveTeacherDto) {
