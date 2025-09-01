@@ -40,44 +40,6 @@ export class TeacherService {
         });
     }
 
-    async getTeachersByAcademy(academyId: number) {
-        return this.prisma.user.findMany({
-            where: {
-                academyLinks: {
-                    some: {
-                        academyId,
-                        role: {
-                            name: "Teacher"
-                        }
-                    }
-                }
-            },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                profilePhoto: true,
-                academyLinks: {
-                    where: { 
-                        academyId,
-                        role: {
-                            name: "Teacher"
-                        } 
-                    },
-                    select: {
-                        role: true,
-                        academy: {
-                            select: {
-                                id: true,
-                                name: true,
-                                logo: true
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     async addTeacherToAcademy(dto: AddTeacherDto) {
         // Check if the user exists
