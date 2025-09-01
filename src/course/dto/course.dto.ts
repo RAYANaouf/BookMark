@@ -1,16 +1,19 @@
 // src/modules/training-program/dto/create-training-program.dto.ts
 
 import { Type } from 'class-transformer';
-import { IsString, IsOptional, IsNumber, IsNumberString, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsNumberString, IsNotEmpty, ValidateNested, IsArray } from 'class-validator';
+import { CreateChapterDto } from './create-chapter.dto';
 
 export class CreateCourseDto {
-  
   
   @IsNumber()
   @Type(() => Number)
   academyId: number;
 
-  
+  @IsNumber()
+  @Type(() => Number)
+  moduleId: number;
+
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -19,18 +22,36 @@ export class CreateCourseDto {
   @IsNotEmpty()
   description: string;
 
+  @IsString()
+  @IsOptional()
   targetAudience?: string;
 
+  @IsString()
+  @IsOptional()
   prerequisites?: string;
 
+  @IsString()
+  @IsOptional()
   whatYouWillLearn?: string;
 
+  @IsString()
+  @IsOptional()
   whatYouCanDoAfter?: string;
 
-  minAge : number
+  @IsNumber()
+  @IsOptional()
+  minAge?: number;
 
-  maxAge : number
+  @IsNumber()
+  @IsOptional()
+  maxAge?: number;
 
-  price : number
+  @IsNumber()
+  @IsOptional()
+  price?: number;
 
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateChapterDto)
+  chapters: CreateChapterDto[];
 }
