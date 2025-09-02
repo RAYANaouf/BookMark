@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupResponseDto } from './dto/group-response.dto';
 
 @ApiTags('groups')
@@ -12,6 +12,15 @@ export class GroupController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiBody({
+    description: 'Group details',
+    schema: {
+      example: {
+        name: 'Group A',
+        courseId: 1,
+      }
+    }
+  })
   @ApiOperation({ summary: 'Create a new group' })
   @ApiResponse({ status: 201, description: 'Group created successfully', type: GroupResponseDto })
   async create(@Body() createGroupDto: CreateGroupDto): Promise<GroupResponseDto> {
@@ -20,6 +29,15 @@ export class GroupController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a group' })
+  @ApiBody({
+    description: 'Group details',
+    schema: {
+      example: {
+        name: 'Group A',
+        courseId: 1,
+      }
+    }
+  })
   @ApiResponse({ status: 200, description: 'Group updated successfully', type: GroupResponseDto })
   @ApiResponse({ status: 404, description: 'Group not found' })
   async update(
