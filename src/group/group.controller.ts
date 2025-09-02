@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { GroupResponseDto } from './dto/group-response.dto';
+import { AssignUserGroupDto } from './dto/assign-user-group.dto';
+import { UserGroupResponseDto } from './dto/user-group-response.dto';
 
 @ApiTags('groups')
 @Controller('groups')
@@ -62,5 +64,62 @@ export class GroupController {
   @ApiResponse({ status: 404, description: 'Group not found' })
   async findOne(@Param('id') id: string): Promise<GroupResponseDto> {
     return this.groupService.findOne(+id);
+  }
+
+  @Post(':id/members')
+  @ApiOperation({ summary: 'Add a user to a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiBody({ type: () => ({
+    userId: { type: 'number', example: 1 },
+    role: { type: 'string', enum: ['STUDENT', 'TEACHER'], example: 'STUDENT' }
+  })})
+  @ApiResponse({ status: 201, description: 'User added to group successfully' })
+  @ApiResponse({ status: 404, description: 'User or group not found' })
+  @ApiResponse({ status: 409, description: 'User is already in the group' })
+  async addUserToGroup(
+    @Param('id') groupId: string,
+    @Body() assignDto: Omit<AssignUserGroupDto, 'groupId'>,
+  ): Promise<{ message: string }> {
+    return this.groupService.assignUser({
+      ...assignDto,
+      groupId: +groupId,
+    });
+  }
+
+  @Delete(':groupId/members/:userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove a user from a group' })
+  @ApiParam({ name: 'groupId', description: 'Group ID' })
+  @ApiParam({ name: 'userId', description: 'User ID' })
+  @ApiResponse({ status: 204, description: 'User removed from group successfully' })
+  @ApiResponse({ status: 404, description: 'User or group not found' })
+  async removeUserFromGroup(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    await this.groupService.removeUserFromGroup(+userId, +groupId);
+  }
+
+  @Get(':id/members')
+  @ApiOperation({ summary: 'Get all members of a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'List of group members', 
+    type: [UserGroupResponseDto],
+    schema: {
+      example: [{
+        userId: 1,
+        groupId: 1,
+        role: 'STUDENT',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com'
+      }]
+    }
+  })
+  @ApiResponse({ status: 404, description: 'Group not found' })
+  async getGroupMembers(@Param('id') id: string): Promise<UserGroupResponseDto[]> {
+    return this.groupService.getGroupMembers(+id);
   }
 }
