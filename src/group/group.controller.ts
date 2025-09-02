@@ -69,7 +69,6 @@ export class GroupController {
   @Post(':id/members')
   @ApiOperation({ summary: 'Add a user to a group' })
   @ApiBody({ 
-    type: () => AssignUserGroupDto,
     schema: {
       example: {
         userId: 1,
