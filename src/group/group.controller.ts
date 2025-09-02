@@ -68,22 +68,23 @@ export class GroupController {
 
   @Post(':id/members')
   @ApiOperation({ summary: 'Add a user to a group' })
-  @ApiParam({ name: 'id', description: 'Group ID' })
-  @ApiBody({ type: () => ({
-    userId: { type: 'number', example: 1 },
-    role: { type: 'string', enum: ['STUDENT', 'TEACHER'], example: 'STUDENT' }
-  })})
+  @ApiBody({ 
+    type: () => AssignUserGroupDto,
+    schema: {
+      example: {
+        userId: 1,
+        groupId: 1,
+        role: 'STUDENT',
+      },
+    }, 
+  })
   @ApiResponse({ status: 201, description: 'User added to group successfully' })
   @ApiResponse({ status: 404, description: 'User or group not found' })
   @ApiResponse({ status: 409, description: 'User is already in the group' })
   async addUserToGroup(
-    @Param('id') groupId: string,
-    @Body() assignDto: Omit<AssignUserGroupDto, 'groupId'>,
+    @Body() assignDto: AssignUserGroupDto,
   ): Promise<{ message: string }> {
-    return this.groupService.assignUser({
-      ...assignDto,
-      groupId: +groupId,
-    });
+    return this.groupService.assignUser(assignDto);
   }
 
   @Delete(':groupId/members/:userId')
