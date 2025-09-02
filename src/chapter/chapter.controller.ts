@@ -21,7 +21,17 @@ export class ChapterController {
     status: HttpStatus.NOT_FOUND,
     description: 'Course not found',
   })
-  @ApiBody({ type: CreateChapterDto })
+  @ApiBody({
+    type: CreateChapterDto,
+    schema : {
+      example: {
+        name: 'Chapter 1',
+        description: 'Description of chapter 1',
+        order: 1,
+        courseId: 1,
+      }
+    }
+  })
   create(@Body() createChapterDto: CreateChapterDto) {
     return this.chapterService.create(createChapterDto);
   }
@@ -82,7 +92,17 @@ export class ChapterController {
     status: HttpStatus.NOT_FOUND,
     description: 'Chapter or course not found',
   })
-  @ApiBody({ type: UpdateChapterDto })
+  @ApiBody({
+    type: UpdateChapterDto,
+    schema : {
+      example: {
+        name: 'Chapter 1',
+        description: 'Description of chapter 1',
+        order: 1,
+        courseId: 1,
+      }
+    } 
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateChapterDto: UpdateChapterDto,
