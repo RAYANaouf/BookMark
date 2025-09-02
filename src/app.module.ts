@@ -15,6 +15,7 @@ import { TeacherModule } from './teacher/teacher.module';
 import { RoleModule } from './role/role.module';
 import { ModuleModule } from './module/module.module';
 import { ChapterModule } from './chapter/chapter.module';
+import { GroupModule } from './group/group.module';
 
 @Module({
   imports: [ 
@@ -24,7 +25,7 @@ import { ChapterModule } from './chapter/chapter.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, GroupModule, 
   ],
   controllers : [AppController, PostController]
 })

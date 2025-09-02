@@ -230,8 +230,14 @@ model Group{
   id     Int @id @default(autoincrement())
   name   String
 
+  active Boolean @default(true)
+
   exams    Exam[]
 
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   courseId Int?
   course Course? @relation(fields: [courseId] , references: [id]) 
