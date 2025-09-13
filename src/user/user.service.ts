@@ -107,37 +107,7 @@ export class UserService {
             return null;
         }
 
-        // Process academies where user is a teacher
-        const teachingAcademies = user.academyLinks
-            .filter(link => link.role.name === 'TEACHER')
-            .map(link => ({
-                ...link.academy,
-                role: link.role.name,
-                courses: link.academy.courses.map(course => ({
-                    ...course,
-                    groups: course.groups
-                        .filter(group => 
-                            group.userGroups.some(ug => ug.userId === id && ug.role === 'TEACHER')
-                        )
-                        .map(({ userGroups, ...group }) => group)
-                }))
-            }));
-
-        // Process academies where user is a student
-        const learningAcademies = user.academyLinks
-            .filter(link => link.role.name === 'STUDENT')
-            .map(link => ({
-                ...link.academy,
-                role: link.role.name,
-                courses: link.academy.courses.map(course => ({
-                    ...course,
-                    groups: course.groups
-                        .filter(group => 
-                            group.userGroups.some(ug => ug.userId === id && ug.role === 'STUDENT')
-                        )
-                        .map(({ userGroups, ...group }) => group)
-                }))
-            }));
+        
 
         // Process groups where user is a member
         const userGroups = user.userGroup.map(ug => ({
@@ -171,10 +141,6 @@ export class UserService {
         
         return {
             ...userData,
-            academies: {
-                teaching: teachingAcademies,
-                learning: learningAcademies
-            },
             groups: userGroups,
             pendingEnrollments
         };
