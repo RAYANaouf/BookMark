@@ -2,6 +2,7 @@ import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Que
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('enrollment-request')
 export class EnrollmentRequestController {
@@ -13,13 +14,14 @@ export class EnrollmentRequestController {
     }
 
 
-    
+    @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
     @Get('course/:courseId')
     async getByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
         return this.enrollmentRequestService.getRequestsByCourseId(courseId);
     }
 
+    @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
     @Patch(':id/accept')
     async acceptRequest(@Param('id', ParseIntPipe) id: number) {
