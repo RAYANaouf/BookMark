@@ -19,7 +19,6 @@ export class SectionController {
     type: SectionResponseDto,
   })
   @ApiBody({
-    type: CreateSectionDto,
     schema: {
       example: {
         name: 'Introduction',
