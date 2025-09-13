@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
@@ -9,24 +9,48 @@ export class SectionService {
   constructor(private prisma: PrismaService) {}
 
   async create(createSectionDto: CreateSectionDto): Promise<SectionResponseDto> {
-    console.log("we are here" , createSectionDto);
+    // Validate required fields
+    if (!createSectionDto) {
+      throw new BadRequestException('Request body cannot be empty');
+    }
+
+    const { name, order, chapterId } = createSectionDto;
+    
+    if (!name || order === undefined || !chapterId) {
+      throw new BadRequestException('Missing required fields. Required fields: name, order, chapterId');
+    }
+
     // Check if chapter exists
     const chapter = await this.prisma.chapter.findUnique({
-      where: { id: createSectionDto.chapterId },
+      where: { id: chapterId },
     });
 
     if (!chapter) {
       throw new NotFoundException(
-        `Chapter with ID ${createSectionDto.chapterId} not found`,
+        `Chapter with ID ${chapterId} not found`,
+      );
+    }
+
+    // Check for duplicate section order in the same chapter
+    const existingSection = await this.prisma.section.findFirst({
+      where: {
+        chapterId,
+        order,
+      },
+    });
+
+    if (existingSection) {
+      throw new ConflictException(
+        `A section with order ${order} already exists in chapter ${chapterId}`,
       );
     }
 
     return this.prisma.section.create({
       data: {
-        name: createSectionDto.name,
-        order: createSectionDto.order,
-        description: createSectionDto.description || '', // Use description as content or empty string
-        chapterId: createSectionDto.chapterId,
+        name,
+        order,
+        description: createSectionDto.description || '',
+        chapterId,
       },
     });
   }
