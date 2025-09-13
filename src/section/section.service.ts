@@ -9,6 +9,7 @@ export class SectionService {
   constructor(private prisma: PrismaService) {}
 
   async create(createSectionDto: CreateSectionDto): Promise<SectionResponseDto> {
+    console.log("we are here" , createSectionDto);
     // Check if chapter exists
     const chapter = await this.prisma.chapter.findUnique({
       where: { id: createSectionDto.chapterId },
