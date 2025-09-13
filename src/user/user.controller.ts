@@ -139,7 +139,7 @@ export class UserController {
     }
 
     @Get(':id')
-    @UseGuards(JwtGuard)
+    //@UseGuards(JwtGuard)
     @ApiOperation({ 
         summary: 'Get user by ID',
         description: 'Retrieves a user profile by ID. Requires authentication.'

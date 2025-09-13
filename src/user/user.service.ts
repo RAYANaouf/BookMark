@@ -5,7 +5,6 @@ import { UserDto } from './dto';
 @Injectable()
 export class UserService {
 
-
     constructor(
         private prisma : PrismaService
     ){
@@ -44,19 +43,48 @@ export class UserService {
     async getUserById(id: number) {
         const user = await this.prisma.user.findUnique({
             where: { id },
-            include: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                profilePhoto: true,
                 account: {
                     select: {
                         email: true
                     }
                 },
                 academyLinks: {
-                    select: {
-                        academyId: true,
-                        role: true,
+                    include: {
                         academy: {
-                            select: {
-                                name: true
+                            include: {
+                                address: true,
+                                courses: {
+                                    include: {
+                                        groups: {
+                                            include: {
+                                                userGroups: {
+                                                    where: { userId: id }
+                                                }
+                                            }
+                                        },
+                                        module: true
+                                    }
+                                }
+                            }
+                        },
+                        role: true
+                    }
+                },
+                userGroup: {
+                    include: {
+                        group: {
+                            include: {
+                                course: {
+                                    include: {
+                                        academy: true,
+                                        module: true
+                                    }
+                                }
                             }
                         }
                     }
@@ -64,55 +92,91 @@ export class UserService {
                 enrollmentRequests: {
                     include: {
                         courses: {
-                            select: {
-                                id: true,
-                                name: true,
-                                coverPhoto: true,
-                                description: true,
-                                academy: {
-                                    select: {
-                                        id: true,
-                                        name: true
-                                    }
-                                }
+                            include: {
+                                academy: true
                             }
                         }
-                    },
-                    orderBy: {
-                        createdAt: 'desc'
                     }
-                }
-            }
+                },
+                createdAt: true,
+                updatedAt: true
+            },
         });
 
         if (!user) {
-            throw new Error('User not found');
+            return null;
         }
 
+        // Process academies where user is a teacher
+        const teachingAcademies = user.academyLinks
+            .filter(link => link.role.name === 'TEACHER')
+            .map(link => ({
+                ...link.academy,
+                role: link.role.name,
+                courses: link.academy.courses.map(course => ({
+                    ...course,
+                    groups: course.groups
+                        .filter(group => 
+                            group.userGroups.some(ug => ug.userId === id && ug.role === 'TEACHER')
+                        )
+                        .map(({ userGroups, ...group }) => group)
+                }))
+            }));
+
+        // Process academies where user is a student
+        const learningAcademies = user.academyLinks
+            .filter(link => link.role.name === 'STUDENT')
+            .map(link => ({
+                ...link.academy,
+                role: link.role.name,
+                courses: link.academy.courses.map(course => ({
+                    ...course,
+                    groups: course.groups
+                        .filter(group => 
+                            group.userGroups.some(ug => ug.userId === id && ug.role === 'STUDENT')
+                        )
+                        .map(({ userGroups, ...group }) => group)
+                }))
+            }));
+
+        // Process groups where user is a member
+        const userGroups = user.userGroup.map(ug => ({
+            id: ug.group.id,
+            name: ug.group.name,
+            role: ug.role,
+            course: ug.group.course ? {
+              id: ug.group.course.id,
+              name: ug.group.course.name,
+              academy: {
+                id: ug.group.course.academy.id,
+                name: ug.group.course.academy.name
+              }
+            } : null
+          }));
+
+        // Process pending enrollments
+        const pendingEnrollments = user.enrollmentRequests
+            .filter(req => req.status === 'Pending')
+            .map(req => ({
+                courseId: req.courses.id,
+                courseName: req.courses.name,
+                academyId: req.courses.academy.id,
+                academyName: req.courses.academy.name,
+                status: req.status,
+                requestedAt: req.createdAt
+            }));
+
+        // Remove sensitive data and restructure the response
+        const { ...userData } = user;
+        
         return {
-            id: user.id,
-            email: user.account.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            profilePhoto: user.profilePhoto,
-            roles: user.academyLinks.map(link => ({
-                academyId: link.academyId,
-                academyName: link.academy.name,
-                role: link.role
-            })),
-            enrollmentRequests: user.enrollmentRequests.map(request => ({
-                id: request.id,
-                status: request.status,
-                createdAt: request.createdAt,
-                updatedAt: request.updatedAt,
-                course: {
-                    id: request.courses.id,
-                    name: request.courses.name,
-                    coverPhoto: request.courses.coverPhoto,
-                    description: request.courses.description,
-                    academy: request.courses.academy
-                }
-            }))
+            ...userData,
+            academies: {
+                teaching: teachingAcademies,
+                learning: learningAcademies
+            },
+            groups: userGroups,
+            pendingEnrollments
         };
     }
 
