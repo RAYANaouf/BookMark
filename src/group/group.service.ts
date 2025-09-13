@@ -190,4 +190,23 @@ export class GroupService {
       updatedAt: userGroup.updatedAt,
     }));
   }
+
+  async findAllByCourse(courseId: number): Promise<GroupResponseDto[]> {
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    }
+
+    return this.prisma.group.findMany({
+      where: { 
+        courseId,
+        active: true // Only return active groups
+      },
+      orderBy: { name: 'asc' }, // Order groups by name
+    });
+  }
 }

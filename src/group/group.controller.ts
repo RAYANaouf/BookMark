@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -121,5 +121,25 @@ export class GroupController {
   @ApiResponse({ status: 404, description: 'Group not found' })
   async getGroupMembers(@Param('id') id: string): Promise<UserGroupResponseDto[]> {
     return this.groupService.getGroupMembers(+id);
+  }
+
+  @Get('course/:courseId')
+  @ApiOperation({ summary: 'Get all groups for a course' })
+  @ApiParam({
+    name: 'courseId',
+    description: 'ID of the course to get groups for',
+    type: 'number',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns all groups for the specified course',
+    type: [GroupResponseDto],
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Course not found',
+  })
+  async findAllByCourse(@Param('courseId', ParseIntPipe) courseId: number): Promise<GroupResponseDto[]> {
+    return this.groupService.findAllByCourse(courseId);
   }
 }
