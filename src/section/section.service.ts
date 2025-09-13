@@ -9,6 +9,7 @@ export class SectionService {
   constructor(private prisma: PrismaService) {}
 
   async create(createSectionDto: CreateSectionDto): Promise<SectionResponseDto> {
+    console.log("the create request : " , createSectionDto)
     // Validate required fields
     if (!createSectionDto) {
       throw new BadRequestException('Request body cannot be empty');
