@@ -15,7 +15,18 @@ async function bootstrap() {
   const config = new DocumentBuilder()
   .setTitle('J-Learn')
   .setDescription('J-Learn API')
-  .setVersion('1.0')
+  .setVersion('1.0')  
+  .addBearerAuth(
+    {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT',
+      description: 'Enter JWT token',
+      in: 'header',
+    },
+    'JWT-auth', // This name should be same as used in @ApiBearerAuth('JWT-auth') in the controller
+  )
   .build()
 
   const document = SwaggerModule.createDocument(app , config)
