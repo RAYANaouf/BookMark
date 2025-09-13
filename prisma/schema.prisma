@@ -123,7 +123,7 @@ model Support {
   title       String
   description String?
   type        String    // 'video', 'document', 'link', 'exercise', etc.
-  url         String
+  url         String?
   content     String?   // For rich text content (if needed) 
   isPublished Boolean   @default(false)
   order       Int

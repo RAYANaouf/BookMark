@@ -39,7 +39,7 @@ export class SupportService {
         title: createSupportDto.title,
         description: createSupportDto.description,
         type: createSupportDto.type,
-        url: createSupportDto.url,
+        url: createSupportDto.url ,
         content: createSupportDto.content,
         isPublished: createSupportDto.isPublished ?? false,
         order: createSupportDto.order,

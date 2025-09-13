@@ -14,9 +14,8 @@ export class CreateSupportDto {
   type: string; // 'video', 'document', 'link', 'exercise', etc.
 
   @IsString()
-  @IsNotEmpty()
   @IsUrl()
-  url: string;
+  url?: string;
 
   @IsString()
   @IsOptional()

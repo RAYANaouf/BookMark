@@ -14,7 +14,7 @@ export class SupportResponseDto {
   type: string;
 
   @ApiProperty()
-  url: string;
+  url?: string | null;
 
   @ApiProperty({ required: false })
   content?: string | null;
