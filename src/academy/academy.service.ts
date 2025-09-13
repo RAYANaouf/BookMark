@@ -25,42 +25,74 @@ export class AcademyService {
 
     //@UseGuards(JwtGuard)
     async getAcademyById(id: number) {
+      // First get the academy
       const academy = await this.prisma.academy.findUnique({
         where: { id },
-        include: {
-          userLinks: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  firstName: true,
-                  lastName: true,
-                  profilePhoto: true
-                }
-              },
-              role: true
-            }
-          }
+        select: {
+          id: true,
+          name: true,
+          logo: true,
+          phone: true,
+          email: true,
         }
       });
       
       if (!academy) return null;
-      
-      // Separate users into teachers and students based on role
-      const teachers = academy.userLinks
-        .filter(link => link.role.name === 'TEACHER')
-        .map(link => link.user);
-      
-      const students = academy.userLinks
-        .filter(link => link.role.name === 'STUDENT')
-        .map(link => link.user);
-      
+    
+      // Get all courses in this academy
+      const courses = await this.prisma.course.findMany({
+        where: { academyId: id },
+        select: {
+          groups: {
+            select: {
+              userGroups: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      profilePhoto: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    
+      // Flatten and deduplicate users by role
+      const allUserGroups = courses.flatMap(course => 
+        course.groups.flatMap(group => 
+          group.userGroups.map(ug => ({
+            ...ug.user,
+            role: ug.role
+          }))
+        )
+      );
+    
+      // Separate users into teachers and students
+      const teachers = allUserGroups
+        .filter(ug => ug.role === 'TEACHER')
+        .reduce<Array<{ id: number; [key: string]: any }>>((acc, user) => {
+          if (!acc.some(u => u.id === user.id)) {
+            acc.push(user);
+          }
+          return acc;
+        }, []);
+    
+      const students = allUserGroups
+        .filter(ug => ug.role === 'STUDENT')
+        .reduce<Array<{ id: number; [key: string]: any }>>((acc, user) => {
+          if (!acc.some(u => u.id === user.id)) {
+            acc.push(user);
+          }
+          return acc;
+        }, []);
+    
       return {
-        id: academy.id,
-        name: academy.name,
-        logo: academy.logo,
-        phone: academy.phone,
-        email: academy.email,
+        ...academy,
         teachers,
         students
       };
