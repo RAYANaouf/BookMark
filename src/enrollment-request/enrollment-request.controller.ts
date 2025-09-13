@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Query } from '@nestjs/common';
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
@@ -10,6 +10,12 @@ export class EnrollmentRequestController {
     @Post('create')
     async create(@Body() dto: CreateEnrollmentRequestDto) {
         return this.enrollmentRequestService.create(dto);
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('course/:courseId')
+    async getByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
+        return this.enrollmentRequestService.getRequestsByCourseId(courseId);
     }
 
     @UseGuards(JwtGuard)

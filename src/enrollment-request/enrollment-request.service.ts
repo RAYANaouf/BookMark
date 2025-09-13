@@ -80,6 +80,42 @@ export class EnrollmentRequestService {
             };
         });
     }
+
+    async getRequestsByCourseId(courseId: number) {
+        return this.prisma.enrollmentRequest.findMany({
+            where: { courseId },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        profilePhoto: true,
+                        account: {
+                            select: {
+                                email: true
+                            }
+                        }
+                    }
+                },
+                courses: {
+                    select: {
+                        id: true,
+                        name: true,
+                        academy: {
+                            select: {
+                                id: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+    }
     
 
 }
