@@ -23,7 +23,7 @@ export class SectionController {
     schema: {
       example: {
         name: 'Introduction',
-        content: 'This is the introduction section',
+        description: 'This is the introduction section',
         order: 1,
         chapterId: 1,
       },
