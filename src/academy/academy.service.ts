@@ -25,15 +25,33 @@ export class AcademyService {
 
     //@UseGuards(JwtGuard)
     async getAcademyById(id: number) {
-      // First get the academy
+      // First get the academy with user links
       const academy = await this.prisma.academy.findUnique({
         where: { id },
+        include: {
+          userLinks: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  profilePhoto: true,
+                  account: {
+                    select: {
+                      email: true
+                    }
+                  }
+                }
+              },
+              role: {
         select: {
           id: true,
-          name: true,
-          logo: true,
-          phone: true,
-          email: true,
+                  name: true
+                }
+              }
+            }
+          }
         }
       });
       
