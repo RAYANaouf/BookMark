@@ -159,10 +159,17 @@ export class GroupService {
   }
 
   async getGroupMembers(groupId: number): Promise<UserGroupResponseDto[]> {
+
+    console.log("groupId : " , groupId)
+
     // Check if group exists
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
     });
+
+    
+    console.log("group : " , group)
+
     if (!group) {
       throw new NotFoundException(`Group with ID ${groupId} not found`);
     }
@@ -179,6 +186,8 @@ export class GroupService {
         },
       },
     });
+
+    console.log("userGroups : " , userGroups)
 
     return userGroups.map(userGroup => ({
       userId: userGroup.userId,
