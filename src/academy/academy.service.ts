@@ -29,8 +29,16 @@ export class AcademyService {
         where: { id },
         include: {
           userLinks: {
-            select: {
-              userId: true
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  profilePhoto: true
+                }
+              },
+              role: true
             }
           }
         }
@@ -38,13 +46,23 @@ export class AcademyService {
       
       if (!academy) return null;
       
+      // Separate users into teachers and students based on role
+      const teachers = academy.userLinks
+        .filter(link => link.role.name === 'TEACHER')
+        .map(link => link.user);
+      
+      const students = academy.userLinks
+        .filter(link => link.role.name === 'STUDENT')
+        .map(link => link.user);
+      
       return {
-          id: academy.id,
-          name: academy.name,
-          logo: academy.logo,
-          phone: academy.phone,
-          email: academy.email,
-          owners: academy.userLinks.map(link => link.userId)
+        id: academy.id,
+        name: academy.name,
+        logo: academy.logo,
+        phone: academy.phone,
+        email: academy.email,
+        teachers,
+        students
       };
     }
 
