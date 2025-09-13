@@ -17,6 +17,8 @@ import { ModuleModule } from './module/module.module';
 import { ChapterModule } from './chapter/chapter.module';
 import { GroupModule } from './group/group.module';
 import { SectionModule } from './section/section.module';
+import { SupportController } from './support/support.controller';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [ 
@@ -26,8 +28,8 @@ import { SectionModule } from './section/section.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, GroupModule, SectionModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, GroupModule, SectionModule, SupportModule, 
   ],
-  controllers : [AppController, PostController]
+  controllers : [AppController, PostController, SupportController]
 })
 export class AppModule {}
