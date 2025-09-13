@@ -119,33 +119,6 @@ export class CourseController {
               }])
             }
           }
-        },
-        {
-          type: 'object',
-          properties: {
-            academyId: { type: 'number' },
-            moduleId: { type: 'number' },
-            name: { type: 'string' },
-            description: { type: 'string' },
-            targetAudience: { type: 'string' },
-            prerequisites: { type: 'string' },
-            whatYouWillLearn: { type: 'string' },
-            whatYouCanDoAfter: { type: 'string' },
-            minAge: { type: 'number' },
-            maxAge: { type: 'number' },
-            price: { type: 'number' },
-            chapters: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  name: { type: 'string' },
-                  description: { type: 'string' },
-                  order: { type: 'number' }
-                }
-              }
-            }
-          }
         }
       ]
     }
@@ -172,12 +145,6 @@ export class CourseController {
         throw new BadRequestException('Invalid chapters format. Must be a valid JSON string');
       }
     }
-
-    if (courseData.academyId) courseData.academyId = +courseData.academyId;
-    if (courseData.moduleId) courseData.moduleId = +courseData.moduleId;
-    if (courseData.price) courseData.price = +courseData.price;
-    if (courseData.minAge) courseData.minAge = +courseData.minAge;
-    if (courseData.maxAge) courseData.maxAge = +courseData.maxAge;
 
     console.log('create course ====>>', courseData);
 
