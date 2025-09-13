@@ -12,6 +12,8 @@ export class EnrollmentRequestController {
         return this.enrollmentRequestService.create(dto);
     }
 
+
+    
     @UseGuards(JwtGuard)
     @Get('course/:courseId')
     async getByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
