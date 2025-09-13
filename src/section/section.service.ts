@@ -17,7 +17,7 @@ export class SectionService {
     const { name, order, chapterId } = createSectionDto;
     
     if (!name || order === undefined || !chapterId) {
-      throw new BadRequestException('Missing required fields. Required fields: name, order, chapterId');
+      throw new BadRequestException('Missing required fields. Required fields: name, order, chapterId' , order + " " + chapterId + name);
     }
 
     // Check if chapter exists
