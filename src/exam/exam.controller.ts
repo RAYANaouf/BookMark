@@ -15,6 +15,7 @@ import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
+import { GetModuleLevelDto } from './dto/module-level.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('exams')
@@ -117,5 +118,16 @@ export class ExamController {
   @ApiResponse({ status: 404, description: 'User not found' })
   getUserGrades(@Param('userId', ParseIntPipe) userId: number) {
     return this.examService.getUserGrades(userId);
+  }
+
+  @Get('module-level/:moduleId')
+  async getModuleLevel(
+    @Param('moduleId') moduleId: string,
+    @Query('userId') userId: string
+  ) {
+    return this.examService.calculateModuleLevel(
+      parseInt(userId, 10),
+      parseInt(moduleId, 10)
+    );
   }
 }

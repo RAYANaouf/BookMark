@@ -239,4 +239,118 @@ export class ExamService {
       },
     });
   }
+
+  async calculateModuleLevel(userId: number, moduleId: number) {
+    // 1. Get all courses in the module
+    const courses = await this.prisma.course.findMany({
+      where: { moduleId },
+      select: { id: true, name: true }
+    });
+
+    if (courses.length === 0) {
+      throw new NotFoundException(`No courses found for module ID ${moduleId}`);
+    }
+
+    // 2. Get all groups for these courses
+    const groups = await this.prisma.group.findMany({
+      where: {
+        courseId: { in: courses.map(c => c.id) },
+        userGroups: {
+          some: { userId }
+        }
+      },
+      select: {
+        id: true,
+        courseId: true
+      }
+    });
+
+    if (groups.length === 0) {
+      throw new NotFoundException(`User is not enrolled in any group for module ID ${moduleId}`);
+    }
+
+    // 3. Get all exams for these groups
+    const exams = await this.prisma.exam.findMany({
+      where: {
+        groupId: { in: groups.map(g => g.id) }
+      },
+      include: {
+        grade: {
+          where: { userId }
+        },
+        group: {
+          include: {
+            course: true
+          }
+        }
+      }
+    });
+
+    if (exams.length === 0) {
+      throw new NotFoundException(`No exams found for user ${userId} in module ${moduleId}`);
+    }
+
+    // 4. Calculate average grade per course
+    const courseAverages: Record<number, { sum: number; count: number; name: string }> = {};
+    
+    exams.forEach(exam => {
+        if (exam.grade.length > 0) {
+          const courseId = exam.group?.courseId;
+          if (courseId === null || courseId === undefined) {
+            return; // Skip if courseId is null or undefined
+          }
+          const grade = exam.grade[0].grade; // Assuming one grade per exam per user
+          
+          if (!courseAverages[courseId]) {
+            courseAverages[courseId] = {
+              sum: 0,
+              count: 0,
+              name: exam.group?.course?.name || 'Unknown Course'
+            };
+          }
+          
+          courseAverages[courseId].sum += grade;
+          courseAverages[courseId].count++;
+        }
+      });
+
+    // 5. Calculate final module level (0-100 scale)
+    let totalWeightedSum = 0;
+    let totalWeight = 0;
+    
+    const courseResults = Object.entries(courseAverages).map(([courseId, data]) => {
+      const average = data.sum / data.count;
+      totalWeightedSum += average; // Equal weight for all courses
+      totalWeight += 1;
+      
+      return {
+        courseId: parseInt(courseId),
+        courseName: data.name,
+        averageGrade: average,
+        examCount: data.count
+      };
+    });
+    
+    const moduleLevel = totalWeight > 0 ? totalWeightedSum / totalWeight : 0;
+    
+    // 6. Determine level description
+    let levelDescription = '';
+    if (moduleLevel >= 90) levelDescription = 'Expert';
+    else if (moduleLevel >= 80) levelDescription = 'Advanced';
+    else if (moduleLevel >= 70) levelDescription = 'Proficient';
+    else if (moduleLevel >= 60) levelDescription = 'Intermediate';
+    else if (moduleLevel >= 50) levelDescription = 'Beginner';
+    else levelDescription = 'Needs Improvement';
+
+    return {
+      moduleId,
+      userId,
+      level: moduleLevel,
+      levelDescription,
+      courseResults,
+      totalExams: exams.length,
+      completedCourses: courseResults.length,
+      totalCourses: courses.length
+    };
+  }
 }
