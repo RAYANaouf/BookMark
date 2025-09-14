@@ -45,8 +45,8 @@ export class AcademyService {
                 }
               },
               role: {
-        select: {
-          id: true,
+                select: {
+                  id: true,
                   name: true
                 }
               }
@@ -71,6 +71,20 @@ export class AcademyService {
                       firstName: true,
                       lastName: true,
                       profilePhoto: true
+                    },
+                    include : {
+                        userGroup : {
+                            include : {
+                                group : {
+                                    select : {
+                                        name : true
+                                    },
+                                    include : {
+                                        course : true
+                                    }
+                                }
+                            }
+                        }
                     }
                   }
                 }
