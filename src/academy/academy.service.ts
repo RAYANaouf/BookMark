@@ -45,8 +45,8 @@ export class AcademyService {
                 }
               },
               role: {
-                select: {
-                  id: true,
+        select: {
+          id: true,
                   name: true
                 }
               }
@@ -57,16 +57,12 @@ export class AcademyService {
       
       if (!academy) return null;
     
-      // Get all courses in this academy with their groups and user groups
+      // Get all courses in this academy
       const courses = await this.prisma.course.findMany({
         where: { academyId: id },
         select: {
-          id: true,
-          name: true,
           groups: {
             select: {
-              id: true,
-              name: true,
               userGroups: {
                 include: {
                   user: {
@@ -76,10 +72,7 @@ export class AcademyService {
                       lastName: true,
                       profilePhoto: true
                     }
-                  },
-                },
-                select : {
-                  role : true
+                  }
                 }
               }
             }
@@ -87,76 +80,34 @@ export class AcademyService {
         }
       });
     
-      // Process groups data to include group information with users
-      const userGroups = courses.flatMap(course => 
-        course.groups.flatMap(group => ({
-          group: {
-            id: group.id,
-            name: group.name,
-            course: {
-              id: course.id,
-              name: course.name
-            }
-          },
-          users: group.userGroups.map(ug => ({
+      // Flatten and deduplicate users by role
+      const allUserGroups = courses.flatMap(course => 
+        course.groups.flatMap(group => 
+          group.userGroups.map(ug => ({
             ...ug.user,
             role: ug.role
           }))
-        }))
+        )
       );
     
-      // Separate users into teachers and students with their groups
-      const teachers : {id : number , firstName : string , lastName : string , profilePhoto : string , role : string , groups : {id : number , name : string , course : {id : number , name : string}}[]}[] = [];
-      const students : {id : number , firstName : string , lastName : string , profilePhoto : string , role : string , groups : {id : number , name : string , course : {id : number , name : string}}[]}[] = [];
-      const processedUserIds = new Set();
-    
-      userGroups.forEach(({ group, users }) => {
-        users.forEach(user => {
-          const userWithGroup = {
-            ...user,
-            profilePhoto: user.profilePhoto || '',  
-            groups: [{
-              id: group.id,
-              name: group.name,
-              course: group.course
-            }]
-          };
-    
-          if (user.role === 'TEACHER') {
-            const existingTeacher = teachers.find(t => t.id === user.id);
-            if (existingTeacher) {
-              // Add group to existing teacher if not already present
-              const groupExists = existingTeacher.groups.some(g => g.id === group.id);
-              if (!groupExists) {
-                existingTeacher.groups.push({
-                  id: group.id,
-                  name: group.name,
-                  course: group.course
-                });
-              }
-            } else {
-              teachers.push(userWithGroup);
-              processedUserIds.add(user.id);
-            }
-          } else if (user.role === 'STUDENT') {
-            const existingStudent = students.find(s => s.id === user.id);
-            if (existingStudent) {
-              // Add group to existing student if not already present
-              const groupExists = existingStudent.groups.some(g => g.id === group.id);
-              if (!groupExists) {
-                existingStudent.groups.push({
-                  id: group.id,
-                  name: group.name,
-                  course: group.course
-                });
-              }
-            } else {
-              students.push(userWithGroup);
-              processedUserIds.add(user.id);
-            }
+      // Separate users into teachers and students
+      const teachers = allUserGroups
+        .filter(ug => ug.role === 'TEACHER')
+        .reduce<Array<{ id: number; [key: string]: any }>>((acc, user) => {
+          if (!acc.some(u => u.id === user.id)) {
+            acc.push(user);
           }
-        });
-      });
+          return acc;
+        }, []);
+    
+      const students = allUserGroups
+        .filter(ug => ug.role === 'STUDENT')
+        .reduce<Array<{ id: number; [key: string]: any }>>((acc, user) => {
+          if (!acc.some(u => u.id === user.id)) {
+            acc.push(user);
+          }
+          return acc;
+        }, []);
     
       return {
         ...academy,
