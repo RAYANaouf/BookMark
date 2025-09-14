@@ -19,12 +19,13 @@ export class SeanceController {
         properties : {
             title : { type : 'string' , example : 'Seance Title' , description : 'The title of the seance' },
             description : { type : 'string' , example : 'Seance Description' , description : 'The description of the seance' },
-            type : { type : 'string' , example : 'Seance Type' , description : 'The type of the seance' },
-            url : { type : 'string' , example : 'Seance URL' , description : 'The URL of the seance' },
-            content : { type : 'string' , example : 'Seance Content' , description : 'The content of the seance' },
-            isPublished : { type : 'boolean' , example : true , description : 'The published status of the seance' },
-            order : { type : 'integer' },
-            sectionId : { type : 'integer' },
+            Date : { type : 'string' , example : '2025-09-14' , format : 'date' , description : 'The date of the seance' },
+            startTime : { type : 'string' , example : '14:00' , format : 'time' , description : 'The start time of the seance' },
+            endTime : { type : 'string' , example : '16:00' , format : 'time' , description : 'The end time of the seance' },
+            notes : { type : 'string' , example : 'Seance Notes' , description : 'The notes of the seance' },
+            groupId : { type : 'integer' , example : 1 , description : 'The group ID of the seance' },
+            teacherId : { type : 'integer' , example : 1 , description : 'The teacher ID of the seance' },
+            chapterId : { type : 'integer' , example : 1 , description : 'The chapter ID of the seance' },
         }
      }
   })
