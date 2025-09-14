@@ -56,6 +56,10 @@ model User{
   enrollmentRequests EnrollmentRequest[]
   createAcademyRequest CreateAcademyRequest[]
   userGroup UserGroup[]
+  attendance Attendance[]
+
+  teacherSeances Seance[] @relation("teacher")
+
 }
 
 
@@ -99,6 +103,7 @@ model Chapter {
   courseId    Int
   course      Course    @relation(fields: [courseId], references: [id])
   sections     Section[]
+  seances      Seance[]
 
   @@unique([courseId, order])
 }
@@ -135,6 +140,78 @@ model Support {
 
   @@unique([sectionId, order])
 }
+
+
+
+
+// ---------- Enums ----------
+enum SeanceMode {
+  ONSITE
+  ONLINE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum ChapterCoverage {
+  INTRODUCED
+  PARTIAL
+  COMPLETED
+}
+
+// ---------- New models ----------
+model Seance {
+  id               Int            @id @default(autoincrement())
+  title            String         @default("")
+  startsAt         DateTime
+  endsAt           DateTime
+  
+  mode             SeanceMode     @default(ONSITE)
+  meetingUrl       String?
+  notes            String?
+
+  // Relations
+  groupId          Int
+  group            Group          @relation(fields: [groupId], references: [id])
+
+  teacherId        Int?
+  teacher          User?          @relation("teacher", fields: [teacherId], references: [id])
+
+  chapterId        Int?
+  chapter          Chapter?       @relation(fields: [chapterId], references: [id])
+
+  attendance       Attendance[]
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+
+model Attendance {
+  seanceId         Int
+  userId           Int
+  status           AttendanceStatus @default(PRESENT)
+  checkinAt        DateTime?
+  checkoutAt       DateTime?
+  minutesAttended  Int?
+
+  seance           Seance @relation(fields: [seanceId], references: [id])
+  user             User           @relation(fields: [userId], references: [id])
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@id([seanceId, userId])        // one attendance record per user per seance
+}
+
+
+
+
+
 
 model Post {
   id          Int      @id @default(autoincrement())
@@ -233,9 +310,9 @@ model Group{
 
   active Boolean @default(true)
 
-  exams    Exam[]
+  exams      Exam[]
   userGroups UserGroup[]
-
+  seances    Seance[]
   
   // Timestamps
   createdAt   DateTime  @default(now())
@@ -243,6 +320,7 @@ model Group{
 
   courseId Int?
   course Course? @relation(fields: [courseId] , references: [id]) 
+
 
 }
 
