@@ -70,7 +70,7 @@ export class AttendanceController {
       properties: {
         seanceId : { type: 'integer' , example : 1 , description : 'ID of the seance' },
         userId   : { type: 'integer' , example : 1 , description : 'ID of the user' },
-        status   : { type: 'string' , example : 'PRESENT' , enum : ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] , description : 'Status of the attendance' },
+        status   : { type: 'string' , example : 'PRESENT or ABSENT or LATE or EXCUSED' , enum : ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] , description : 'Status of the attendance' },
       },
     },
    })
