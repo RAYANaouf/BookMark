@@ -1,17 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { SupportService } from './support.service';
 import { CreateSupportDto } from './dto/create-support.dto';
 import { UpdateSupportDto } from './dto/update-support.dto';
 import { SupportResponseDto } from './dto/support-response.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @ApiTags('supports')
 @Controller('supports')
 export class SupportController {
   constructor(private readonly supportService: SupportService) {}
 
-  @Post()
+
+
+
   @HttpCode(HttpStatus.CREATED)
+  @Post()
+  @UseInterceptors(
+    FileInterceptor("logo",{
+      storage : memoryStorage(), //in-memory buffer
+      limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
+    })
+  )
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Create a new support item' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -30,9 +42,11 @@ export class SupportController {
     status: HttpStatus.CONFLICT,
     description: 'A support with the same order already exists in this section',
   })
-  @ApiBody({ type: CreateSupportDto })
-  create(@Body() createSupportDto: CreateSupportDto): Promise<SupportResponseDto> {
-    return this.supportService.create(createSupportDto);
+  @ApiBody({
+    type: CreateSupportDto 
+  })
+  create(@Body() createSupportDto: CreateSupportDto, @UploadedFile() file? ): Promise<SupportResponseDto> {
+    return this.supportService.create(createSupportDto, file);
   }
 
   @Get('section/:sectionId')

@@ -10,14 +10,16 @@ import { v4 as uuidv4 } from 'uuid';
 export class SupportService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createSupportDto: CreateSupportDto, file?: Express.Multer.File): Promise<SupportResponseDto> {
+  async create(createSupportDto: CreateSupportDto , file?: Express.Multer.File): Promise<SupportResponseDto> {
     // Check if section exists
     const section = await this.prisma.section.findUnique({
       where: { id: createSupportDto.sectionId },
     });
 
     if (!section) {
-      throw new NotFoundException(`Section with ID ${createSupportDto.sectionId} not found`);
+      throw new NotFoundException(
+        `Section with ID ${createSupportDto.sectionId} not found`,
+      );
     }
 
     // Check for duplicate order in the same section
@@ -34,62 +36,16 @@ export class SupportService {
       );
     }
 
-    let fileUrl: string | null = null;
-    
-    // Handle file upload if present
-    if (file && createSupportDto.type === 'document') {
-      try {
-        const bucket = firebaseAdmin.storage().bucket();
-        const fileName = `supports/${uuidv4()}${file.originalname}`;
-        const fileUpload = bucket.file(fileName);
-        
-        await new Promise((resolve, reject) => {
-          const blobStream = fileUpload.createWriteStream({
-            metadata: {
-              contentType: file.mimetype,
-            },
-          });
-
-          blobStream.on('error', (error) => {
-            console.error('Error uploading file:', error);
-            reject(new Error('Something went wrong while uploading the file'));
-          });
-
-          blobStream.on('finish', () => {
-            // Get the public URL
-            fileUpload.makePublic().then(() => {
-              fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-              resolve(fileUrl);
-            });
-          });
-
-          blobStream.end(file.buffer);
-        });
-      } catch (error) {
-        console.error('Error uploading file to Firebase Storage:', error);
-        throw new Error('Failed to upload file');
-      }
-    }
-
-    // Create the support item with the file URL if available
     return this.prisma.support.create({
       data: {
         title: createSupportDto.title,
         description: createSupportDto.description,
         type: createSupportDto.type,
-        url: fileUrl || createSupportDto.url || null,
+        url: createSupportDto.url || "",
         content: createSupportDto.content,
         isPublished: createSupportDto.isPublished ?? false,
         order: createSupportDto.order,
         sectionId: createSupportDto.sectionId,
-      },
-      include: {
-        section: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
   }
