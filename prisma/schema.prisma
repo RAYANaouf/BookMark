@@ -157,11 +157,6 @@ enum AttendanceStatus {
   EXCUSED
 }
 
-enum ChapterCoverage {
-  INTRODUCED
-  PARTIAL
-  COMPLETED
-}
 
 // ---------- New models ----------
 model Seance {
