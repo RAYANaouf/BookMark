@@ -46,6 +46,8 @@ export class SupportController {
     type: CreateSupportDto 
   })
   create(@Body() createSupportDto: CreateSupportDto, @UploadedFile() file? ): Promise<SupportResponseDto> {
+    console.log("file ====>> ", file)
+    console.log("createSupportDto ====>> ", createSupportDto)
     return this.supportService.create(createSupportDto, file);
   }
 
