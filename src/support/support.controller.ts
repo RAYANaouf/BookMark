@@ -4,6 +4,9 @@ import { SupportService } from './support.service';
 import { CreateSupportDto } from './dto/create-support.dto';
 import { UpdateSupportDto } from './dto/update-support.dto';
 import { SupportResponseDto } from './dto/support-response.dto';
+import * as firebaseAdmin from 'firebase-admin';
+import { v4 as uuidv4 } from 'uuid';
+import { extname, resolve } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 
@@ -83,7 +86,43 @@ export class SupportController {
   ): Promise<SupportResponseDto> {
     console.log("file ====>> ", file)
     console.log("createSupportDto ====>> ", createSupportDto)
-    return this.supportService.create(createSupportDto, file);
+    let fileUrl : string | undefined = undefined
+    if(file){
+        const fileName = 'support_file/' + uuidv4() + extname(file.originalname)
+        const bucket = firebaseAdmin.storage().bucket()
+        
+        const fileUpload = bucket.file(fileName)
+        
+        const stream = fileUpload.createWriteStream({
+            metadata : {
+                contentType : file.mimetype
+            }
+        })
+
+        await new Promise((resolve , reject) => {
+
+          stream.on("error" , (error) => {
+              console.error("❌ Error uploading file:", error)
+              reject(error)
+          })
+
+
+          stream.on("finish" , async () => {
+              console.log("✅ File uploaded successfully")
+              await fileUpload.makePublic();
+              fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`
+              resolve(null)
+          })
+
+          stream.end(file.buffer)
+          
+      })   
+
+    }
+    else{
+      fileUrl = createSupportDto.url ?? undefined
+    }
+    return this.supportService.create(createSupportDto, fileUrl);
   }
 
   @Get('section/:sectionId')

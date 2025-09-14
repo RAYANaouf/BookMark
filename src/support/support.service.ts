@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class SupportService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createSupportDto: CreateSupportDto , file?: Express.Multer.File): Promise<SupportResponseDto> {
+  async create(createSupportDto: CreateSupportDto , fileUrl?: string): Promise<SupportResponseDto> {
     // Check if section exists
     const section = await this.prisma.section.findUnique({
       where: { id: createSupportDto.sectionId },
@@ -41,7 +41,7 @@ export class SupportService {
         title: createSupportDto.title,
         description: createSupportDto.description,
         type: createSupportDto.type,
-        url: createSupportDto.url || "",
+        url: fileUrl || "",
         content: createSupportDto.content,
         isPublished: createSupportDto.isPublished ?? false,
         order: createSupportDto.order,
