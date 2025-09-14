@@ -64,6 +64,16 @@ export class AttendanceController {
   @ApiResponse({ status: 200, description: 'Attendance record updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Attendance record not found' })
+  @ApiBody({ 
+    schema : {
+      type: 'object',
+      properties: {
+        seanceId : { type: 'integer' , example : 1 , description : 'ID of the seance' },
+        userId   : { type: 'integer' , example : 1 , description : 'ID of the user' },
+        status   : { type: 'string' , example : 'PRESENT' , enum : ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] , description : 'Status of the attendance' },
+      },
+    },
+   })
   update(
     @Param('seanceId', ParseIntPipe) seanceId: number,
     @Param('userId', ParseIntPipe) userId: number,
@@ -104,36 +114,4 @@ export class AttendanceController {
     return this.attendanceService.getUserAttendances(userId);
   }
 
-  @Post('checkin')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Check in a user for a seance' })
-  @ApiResponse({ status: 201, description: 'Checked in successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 404, description: 'User or Seance not found' })
-  checkIn(
-    @Body() createAttendanceDto: CreateAttendanceDto,
-  ) {
-    return this.attendanceService.create({
-      ...createAttendanceDto,
-      checkinAt: new Date(),
-    });
-  }
-
-  @Put('checkout')
-  @ApiOperation({ summary: 'Check out a user from a seance' })
-  @ApiResponse({ status: 200, description: 'Checked out successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 404, description: 'Attendance record not found' })
-  checkOut(
-    @Body() updateAttendanceDto: UpdateAttendanceDto & { seanceId: number; userId: number },
-  ) {
-    return this.attendanceService.update(
-      updateAttendanceDto.seanceId,
-      updateAttendanceDto.userId,
-      {
-        ...updateAttendanceDto,
-        checkoutAt: new Date(),
-      },
-    );
-  }
 }

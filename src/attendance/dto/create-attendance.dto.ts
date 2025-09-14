@@ -12,13 +12,4 @@ export class CreateAttendanceDto {
   @IsOptional()
   status?: AttendanceStatus;
 
-  @IsOptional()
-  checkinAt?: Date;
-
-  @IsOptional()
-  checkoutAt?: Date;
-
-  @IsInt()
-  @IsOptional()
-  minutesAttended?: number;
 }
