@@ -15,7 +15,7 @@ import { ExamService } from './exam.service';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { UpdateGradeDto } from './dto/update-grade.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('exams')
 @Controller('exams')
@@ -28,6 +28,17 @@ export class ExamController {
   @ApiResponse({ status: 201, description: 'Exam created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Group not found' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name     : { type: 'string', example : 'Exam 1' },
+        dateTime : { type: 'string', format: 'date-time', example : '2025-09-14T18:34:36.000Z' },
+        duration : { type: 'integer', example : 60 },
+        groupId  : { type: 'integer', example : 1 },
+      },
+    },
+  })
   create(@Body() createExamDto: CreateExamDto) {
     return this.examService.create(createExamDto);
   }
@@ -52,6 +63,17 @@ export class ExamController {
   @ApiResponse({ status: 200, description: 'Exam updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Exam or group not found' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name     : { type: 'string', example : 'Exam 1' },
+        dateTime : { type: 'string', format: 'date-time', example : '2025-09-14T18:34:36.000Z' },
+        duration : { type: 'integer', example : 60 },
+        groupId  : { type: 'integer', example : 1 },
+      },
+    },
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateExamDto: UpdateExamDto,
