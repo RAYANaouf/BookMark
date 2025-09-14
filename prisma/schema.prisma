@@ -190,9 +190,6 @@ model Attendance {
   seanceId         Int
   userId           Int
   status           AttendanceStatus @default(PRESENT)
-  checkinAt        DateTime?
-  checkoutAt       DateTime?
-  minutesAttended  Int?
 
   seance           Seance @relation(fields: [seanceId], references: [id])
   user             User           @relation(fields: [userId], references: [id])

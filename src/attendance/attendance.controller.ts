@@ -14,7 +14,7 @@ import {
 import { AttendanceService } from './attendance.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('attendance')
 @Controller('attendance')
@@ -27,6 +27,16 @@ export class AttendanceController {
   @ApiResponse({ status: 201, description: 'Attendance record created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'User or Seance not found' })
+  @ApiBody({ 
+    schema : {
+      type: 'object',
+      properties: {
+        seanceId : { type: 'integer' , example : 1 , description : 'ID of the seance' },
+        userId   : { type: 'integer' , example : 1 , description : 'ID of the user' },
+        status   : { type: 'string' , example : 'PRESENT' , enum : ['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'] , description : 'Status of the attendance' },
+      },
+    },
+   })
   create(@Body() createAttendanceDto: CreateAttendanceDto) {
     return this.attendanceService.create(createAttendanceDto);
   }
