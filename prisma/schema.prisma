@@ -55,8 +55,9 @@ model User{
   academyLinks UserAcademy[]
   enrollmentRequests EnrollmentRequest[]
   createAcademyRequest CreateAcademyRequest[]
-  userGroup UserGroup[]
+  userGroup  UserGroup[]
   attendance Attendance[]
+  examGrad   ExamGrad[]
 
   teacherSeances Seance[] @relation("teacher")
 
@@ -336,13 +337,28 @@ enum UserGroupRole {
 }
 
 model Exam{
-  id       Int @id @default(autoincrement())
-  name     String
-  date     DateTime
-  duration Int
+  id        Int @id @default(autoincrement())
+  name      String
+  dateTime  DateTime
+  duration  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  grade    ExamGrad[]
 
   groupId  Int
   group    Group @relation(fields: [groupId], references: [id])
+}
+
+model ExamGrad{
+  id        Int @id @default(autoincrement())
+  grade     Float
+
+  examId    Int
+  exam      Exam @relation(fields: [examId], references: [id])
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
 }
 
 model CreateAcademyRequest {

@@ -21,6 +21,7 @@ import { SupportController } from './support/support.controller';
 import { SupportModule } from './support/support.module';
 import { SeanceModule } from './seance/seance.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { ExamModule } from './exam/exam.module';
 
 @Module({
   imports: [ 
@@ -30,7 +31,7 @@ import { AttendanceModule } from './attendance/attendance.module';
     }) ,
     AuthModule,
     PrismaModule, 
-    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, GroupModule, SectionModule, SupportModule, SeanceModule, AttendanceModule, 
+    UserModule, AcademyModule, SuperAdminModule, CourseModule, PostModule, StudentModule, EnrollmentRequestModule, TeacherModule, RoleModule, ModuleModule, ChapterModule, GroupModule, SectionModule, SupportModule, SeanceModule, AttendanceModule, ExamModule, 
   ],
   controllers : [AppController, PostController, SupportController]
 })
