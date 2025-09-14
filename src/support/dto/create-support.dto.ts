@@ -1,5 +1,7 @@
 import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsOptional, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Express } from 'express';
+import { Multer } from 'multer';
 
 export class CreateSupportDto {
   @ApiProperty({
@@ -46,6 +48,14 @@ export class CreateSupportDto {
   @IsString()
   @IsOptional()
   content?: string;
+
+  @ApiPropertyOptional({
+    description: 'File to upload (for document type)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  file?: Express.Multer.File;
 
   @ApiPropertyOptional({
     description: 'Whether the support item is published',
