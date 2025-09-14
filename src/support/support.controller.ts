@@ -18,7 +18,7 @@ export class SupportController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   @UseInterceptors(
-    FileInterceptor("logo",{
+    FileInterceptor("fileDate",{
       storage : memoryStorage(), //in-memory buffer
       limits : {fileSize: 5 * 1024 * 1024 } //5MB limit
     })
@@ -54,7 +54,7 @@ export class SupportController {
         isPublished : { type : 'boolean' , example : true },
         order : { type : 'number' },
         sectionId : { type : 'number' },
-        file : { 
+        fileDate : { 
           type : 'string' ,
           format : 'binary',
           description : 'Support File'
