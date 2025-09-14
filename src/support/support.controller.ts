@@ -60,6 +60,7 @@ export class SupportController {
   ): Promise<SupportResponseDto> {
     return this.supportService.create(createSupportDto, file);
   }
+  
 
   @Get('section/:sectionId')
   @ApiOperation({ summary: 'Get all support items for a section' })
