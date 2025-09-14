@@ -71,20 +71,6 @@ export class AcademyService {
                       firstName: true,
                       lastName: true,
                       profilePhoto: true
-                    },
-                    include : {
-                        userGroup : {
-                            include : {
-                                group : {
-                                    select : {
-                                        name : true
-                                    },
-                                    include : {
-                                        course : true
-                                    }
-                                }
-                            }
-                        }
                     }
                   }
                 }
@@ -99,6 +85,7 @@ export class AcademyService {
         course.groups.flatMap(group => 
           group.userGroups.map(ug => ({
             ...ug.user,
+            group : group,
             role: ug.role
           }))
         )
