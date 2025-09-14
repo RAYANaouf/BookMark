@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { SupportService } from './support.service';
 import { CreateSupportDto } from './dto/create-support.dto';
 import { UpdateSupportDto } from './dto/update-support.dto';
 import { SupportResponseDto } from './dto/support-response.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('supports')
 @Controller('supports')
@@ -13,8 +12,6 @@ export class SupportController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Create a new support item' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -33,34 +30,10 @@ export class SupportController {
     status: HttpStatus.CONFLICT,
     description: 'A support with the same order already exists in this section',
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        description: { type: 'string', nullable: true },
-        type: { type: 'string', enum: ['document', 'video', 'link', 'exercise'] },
-        url: { type: 'string', nullable: true },
-        content: { type: 'string', nullable: true },
-        isPublished: { type: 'boolean', default: false },
-        order: { type: 'number' },
-        sectionId: { type: 'number' },
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'File to upload (for document type)'
-        }
-      },
-      required: ['title', 'type', 'order', 'sectionId']
-    }
-  })
-  create(
-    @Body() createSupportDto: CreateSupportDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ): Promise<SupportResponseDto> {
-    return this.supportService.create(createSupportDto, file);
+  @ApiBody({ type: CreateSupportDto })
+  create(@Body() createSupportDto: CreateSupportDto): Promise<SupportResponseDto> {
+    return this.supportService.create(createSupportDto);
   }
-  
 
   @Get('section/:sectionId')
   @ApiOperation({ summary: 'Get all support items for a section' })
