@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpStatus, ParseIntPipe } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SeanceService } from './seance.service';
 import { CreateSeanceDto } from './dto/create-seance.dto';
 import { UpdateSeanceDto } from './dto/update-seance.dto';
@@ -13,6 +13,21 @@ export class SeanceController {
   @ApiOperation({ summary: 'Create a new seance' })
   @ApiResponse({ status: 201, description: 'The seance has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Invalid input' })
+  @ApiBody({
+     schema : {
+        type : 'object',
+        properties : {
+            title : { type : 'string' , example : 'Seance Title' , description : 'The title of the seance' },
+            description : { type : 'string' , example : 'Seance Description' , description : 'The description of the seance' },
+            type : { type : 'string' , example : 'Seance Type' , description : 'The type of the seance' },
+            url : { type : 'string' , example : 'Seance URL' , description : 'The URL of the seance' },
+            content : { type : 'string' , example : 'Seance Content' , description : 'The content of the seance' },
+            isPublished : { type : 'boolean' , example : true , description : 'The published status of the seance' },
+            order : { type : 'integer' },
+            sectionId : { type : 'integer' },
+        }
+     }
+  })
   create(@Body() createSeanceDto: CreateSeanceDto) {
     return this.seanceService.create(createSeanceDto);
   }
