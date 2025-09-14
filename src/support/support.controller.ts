@@ -43,7 +43,19 @@ export class SupportController {
     description: 'A support with the same order already exists in this section',
   })
   @ApiBody({
-    type: CreateSupportDto 
+    schema : {
+      type : 'object',
+      properties : {
+        title : { type : 'string' , example : 'Support Title' },
+        description : { type : 'string' , example : 'Support Description' },
+        type : { type : 'string' , example : 'Support Type' },
+        url : { type : 'string' , example : 'Support URL' },
+        content : { type : 'string' , example : 'Support Content' },
+        isPublished : { type : 'boolean' , example : true },
+        order : { type : 'number' },
+        sectionId : { type : 'number' },
+      }
+    }
   })
   create(@Body() createSupportDto: CreateSupportDto, @UploadedFile() file? ): Promise<SupportResponseDto> {
     console.log("file ====>> ", file)
