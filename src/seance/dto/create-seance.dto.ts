@@ -3,10 +3,7 @@ import { IsInt, IsOptional, IsString } from 'class-validator';
 export class CreateSeanceDto {
   @IsString()
   title: string;
-
-  @IsString()
-  description: string;
-
+  
   @IsString()
   date: string; // ISO date string
 
