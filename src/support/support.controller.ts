@@ -54,6 +54,11 @@ export class SupportController {
         isPublished : { type : 'boolean' , example : true },
         order : { type : 'number' },
         sectionId : { type : 'number' },
+        file : { 
+          type : 'string' ,
+          format : 'binary',
+          description : 'Support File'
+        },
       }
     }
   })
