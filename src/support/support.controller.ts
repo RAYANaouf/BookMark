@@ -12,9 +12,6 @@ import { memoryStorage } from 'multer';
 export class SupportController {
   constructor(private readonly supportService: SupportService) {}
 
-
-
-
   @HttpCode(HttpStatus.CREATED)
   @Post()
   @UseInterceptors(
@@ -35,34 +32,55 @@ export class SupportController {
     description: 'Invalid input',
   })
   @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Section not found',
-  })
-  @ApiResponse({
     status: HttpStatus.CONFLICT,
     description: 'A support with the same order already exists in this section',
   })
   @ApiBody({
-    schema : {
-      type : 'object',
-      properties : {
-        title : { type : 'string' , example : 'Support Title' },
-        description : { type : 'string' , example : 'Support Description' },
-        type : { type : 'string' , example : 'Support Type' },
-        url : { type : 'string' , example : 'Support URL' },
-        content : { type : 'string' , example : 'Support Content' },
-        isPublished : { type : 'boolean' , example : true },
-        order : { type : 'number' },
-        sectionId : { type : 'number' },
-        fileDate : { 
-          type : 'string' ,
-          format : 'binary',
-          description : 'Support File'
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', example: 'Support Title' },
+        description: { type: 'string', example: 'Support Description' },
+        type: { 
+          type: 'string', 
+          enum: ['document', 'video', 'link', 'exercise'],
+          example: 'document'
         },
-      }
+        url: { 
+          type: 'string', 
+          nullable: true,
+          example: 'https://example.com/support'
+        },
+        content: { 
+          type: 'string', 
+          nullable: true,
+          example: 'Support content here...'
+        },
+        isPublished: { 
+          type: 'boolean',
+          example: false
+        },
+        order: { 
+          type: 'number',
+          example: 1
+        },
+        sectionId: { 
+          type: 'number',
+          example: 1
+        },
+        fileDate: {
+          type: 'string',
+          format: 'binary',
+          description: 'File to upload (for document type)'
+        }
+      },
+      required: ['title', 'type', 'order', 'sectionId']
     }
   })
-  create(@Body() createSupportDto: CreateSupportDto, @UploadedFile() file? ): Promise<SupportResponseDto> {
+  async create(
+    @Body() createSupportDto: CreateSupportDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ): Promise<SupportResponseDto> {
     console.log("file ====>> ", file)
     console.log("createSupportDto ====>> ", createSupportDto)
     return this.supportService.create(createSupportDto, file);

@@ -1,7 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsOptional, IsUrl } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Express } from 'express';
-import { Multer } from 'multer';
+import { Transform } from 'class-transformer';
 
 export class CreateSupportDto {
   @ApiProperty({
@@ -50,25 +49,20 @@ export class CreateSupportDto {
   content?: string;
 
   @ApiPropertyOptional({
-    description: 'File to upload (for document type)',
-    type: 'string',
-    format: 'binary',
-    required: false
-  })
-  file?: Express.Multer.File;
-
-  @ApiPropertyOptional({
     description: 'Whether the support item is published',
+    example: true,
     default: false
   })
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   @IsOptional()
-  isPublished?: boolean;
+  isPublished?: boolean = false;
 
   @ApiProperty({
     description: 'Order of the support item in the section',
     example: 1
   })
+  @Transform(({ value }) => Number(value))
   @IsNumber()
   @IsNotEmpty()
   order: number;
@@ -77,7 +71,17 @@ export class CreateSupportDto {
     description: 'ID of the section this support item belongs to',
     example: 1
   })
+  @Transform(({ value }) => Number(value))
   @IsNumber()
   @IsNotEmpty()
   sectionId: number;
+
+  @ApiPropertyOptional({
+    description: 'File to upload (for document type)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  @IsOptional()
+  file?: Express.Multer.File;
 }
