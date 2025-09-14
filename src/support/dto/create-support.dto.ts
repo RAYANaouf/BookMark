@@ -35,7 +35,6 @@ export class CreateSupportDto {
     nullable: true
   })
   @IsString()
-  @IsUrl()
   @IsOptional()
   url?: string;
 
