@@ -15,6 +15,7 @@ export class CreateSupportDto {
 
   @IsString()
   @IsUrl()
+  @IsOptional()
   url?: string;
 
   @IsString()
