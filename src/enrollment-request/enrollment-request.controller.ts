@@ -18,13 +18,20 @@ export class EnrollmentRequestController {
     @UseGuards(JwtGuard)
     @Get('course/:courseId')
     async getByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
-        return this.enrollmentRequestService.getRequestsByCourseId(courseId);
+        return this.enrollmentRequestService.getRequestsByUser(courseId);
     }
 
     @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
     @Patch(':id/accept')
     async acceptRequest(@Param('id', ParseIntPipe) id: number) {
-        return this.enrollmentRequestService.acceptRequest(id);
+        return this.enrollmentRequestService.updateRequest(id,{status:'Approved'});
+    }
+
+    @ApiBearerAuth('JWT-auth')
+    @UseGuards(JwtGuard)
+    @Patch(':id/reject')
+    async rejectRequest(@Param('id', ParseIntPipe) id: number) {
+        return this.enrollmentRequestService.updateRequest(id,{status:'Rejected'});
     }
 }
