@@ -87,7 +87,9 @@ export class UserController {
         }   
     })
     async getMe(@Request() req) {
+        console.log("===>",req);
         const userId = getUserIdFromRequest(req);
+        console.log("===>",userId);
         if (userId) {
             return this.userService.getUserById(userId);
         } else {
