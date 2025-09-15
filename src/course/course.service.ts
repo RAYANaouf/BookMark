@@ -87,27 +87,55 @@ export class CourseService {
         return result
     }
 
-    async getAllCourses(userId : number){
-
-        var result = await this.prisma.course.findMany({
-            include : {
-                academy : true,
-                enrollmentRequests : {
-                    where : {
-                        userId: userId
-                    },
-                    select : {
-                        status : true
+    async getAllCourses(userId: number) {
+        // Get all courses with their groups and user's enrollment status
+        const courses = await this.prisma.course.findMany({
+            include: {
+                academy: true,
+                groups: {
+                    include: {
+                        userGroups: {
+                            where: {
+                                userId: userId
+                            },
+                            select: {
+                                role: true
+                            }
+                        },
+                        enrollmentRequests: {
+                            where: {
+                                userId: userId,
+                                status: 'Pending'
+                            },
+                            select: {
+                                id: true
+                            }
+                        }
                     }
                 }
             }
-        })
+        });
 
-        const retrun_result = result.map(course => ({
+        // Transform the data to include enrollment status
+        return courses.map(course => ({
             ...course,
-            requestState : course.enrollmentRequests[0]?.status ??  ""
-        }))
+            enrollmentStatus: this.getUserEnrollmentStatus(course.groups, userId)
+        }));
+    }
 
-        return retrun_result
+    private getUserEnrollmentStatus(groups: any[], userId: number): string {
+        // Check if user is enrolled in any group
+        const isEnrolled = groups.some(group => 
+            group.userGroups.some((ug: any) => ug.userId === userId)
+        );
+        
+        if (isEnrolled) return 'Enrolled';
+
+        // Check if user has a pending request for any group
+        const hasPendingRequest = groups.some(group =>
+            group.enrollmentRequests.some((er: any) => er.userId === userId)
+        );
+
+        return hasPendingRequest ? 'Pending' : 'Not Enrolled';
     }
 }
