@@ -1,18 +1,21 @@
 import { Type } from "class-transformer";
-import { IsNumber } from "class-validator";
-
-
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateEnrollmentRequestDto {
-    
-
     @IsNumber()
     @Type(() => Number)
-    userId : number;
+    userId: number;
     
-
     @IsNumber()
     @Type(() => Number)
-    courseId : number;
+    groupId: number;
+}
+
+export class UpdateEnrollmentRequestDto {
+    @IsString()
+    status: 'Pending' | 'Approved' | 'Rejected';
     
+    @IsString()
+    @IsOptional()
+    rejectedReason?: string;
 }
