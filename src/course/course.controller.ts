@@ -130,6 +130,7 @@ export class CourseController {
     @Body() dto: any,
     @UploadedFile() file?
   ) {
+    console.log("create course ====>> " , dto)
     let courseData = dto;
     
     if (typeof dto.chapters === 'string') {
