@@ -91,9 +91,9 @@ export class UserService {
                 },
                 enrollmentRequests: {
                     include: {
-                        courses: {
+                        group: {
                             include: {
-                                academy: true
+                                course: true
                             }
                         }
                     }
