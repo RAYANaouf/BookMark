@@ -119,6 +119,7 @@ export class CourseController {
       }
     }
   })
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('cover', {
       storage: memoryStorage(),
