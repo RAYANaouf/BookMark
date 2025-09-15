@@ -19,6 +19,7 @@ export class CourseService {
                     whatYouCanDoAfter: dto.whatYouCanDoAfter,
                     minAge: dto.minAge,
                     maxAge: dto.maxAge,
+                    price : dto.price,
                     coverPhoto: coverPhotoUrl,
                     module: {
                         connect: { id: dto.moduleId }
