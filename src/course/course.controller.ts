@@ -133,6 +133,7 @@ export class CourseController {
     console.log("create course ====>> " , dto)
     let courseData = dto;
     
+    // Parse chapters if it's a string
     if (typeof dto.chapters === 'string') {
       try {
         courseData = {
@@ -144,7 +145,17 @@ export class CourseController {
       }
     }
 
-    console.log('create course ====>>', courseData);
+    // Convert string numbers to actual numbers for Prisma
+    const numericFields = ['minAge', 'maxAge', 'price', 'moduleId', 'academyId'];
+    courseData = {
+      ...courseData,
+      ...numericFields.reduce((acc, field) => ({
+        ...acc,
+        [field]: courseData[field] !== undefined ? Number(courseData[field]) : undefined
+      }), {})
+    };
+
+    console.log('create course (parsed) ====>>', courseData);
 
     let coverPhotoUrl : string | null = null ;
 
@@ -176,8 +187,8 @@ export class CourseController {
       })
     }
 
-    console.log("create course  ====>> " , courseData)
-    return this.courseService.create(courseData , coverPhotoUrl ?? undefined);
+    console.log("create course (final) ====>> " , courseData)
+    return this.courseService.create(courseData, coverPhotoUrl ?? undefined);
   }
 
   
