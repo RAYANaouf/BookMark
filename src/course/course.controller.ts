@@ -45,82 +45,78 @@ export class CourseController {
   @ApiBody({
     description: 'Course data and optional cover photo',
     schema: {
-      oneOf: [
-        {
-          type: 'object',
-          properties: {
-            cover: {
-              type: 'string',
-              format: 'binary',
-              description: 'Course cover photo (optional, max 5MB)'
-            },
-            academyId: { 
-              type: 'number',
-              example: 1,
-              description: 'ID of the academy this course belongs to'
-            },
-            moduleId: {
-              type: 'number',
-              example: 1,
-              description: 'ID of the module this course belongs to'
-            },
-            name: {
-              type: 'string',
-              example: 'Advanced Web Development',
-              description: 'Name of the course'
-            },
-            description: {
-              type: 'string',
-              example: 'Learn advanced web development concepts and best practices',
-              description: 'Detailed description of the course'
-            },
-            targetAudience: {
-              type: 'string',
-              example: 'Intermediate web developers',
-              description: 'Intended audience for this course',
-            },
-            prerequisites: {
-              type: 'string',
-              example: 'Basic knowledge of HTML, CSS, and JavaScript',
-              description: 'Prerequisites for taking this course',
-            },
-            whatYouWillLearn: {
-              type: 'string',
-              example: 'Advanced React patterns, Performance optimization, State management',
-              description: 'Key learning outcomes',
-            },
-            whatYouCanDoAfter: {
-              type: 'string',
-              example: 'Build complex web applications, Optimize performance, Implement best practices',
-              description: 'Skills gained after completing the course',
-            },
-            minAge: {
-              type: 'number',
-              example: 16,
-              description: 'Minimum age requirement',
-            },
-            maxAge: {
-              type: 'number',
-              example: 99,
-              description: 'Maximum age limit',
-            },
-            price: {
-              type: 'number',
-              example: 99.99,
-              description: 'Course price',
-            },
-            chapters: {
-              type: 'string',
-              description: 'JSON string of chapters array',
-              example: JSON.stringify([{
-                name: 'Introduction',
-                description: 'Course overview',
-                order: 1
-              }])
-            }
-          }
+      type: 'object',
+      properties: {
+        cover: {
+          type: 'string',
+          format: 'binary',
+          description: 'Course cover photo (optional, max 5MB)'
+        },
+        academyId: { 
+          type: 'number',
+          example: 1,
+          description: 'ID of the academy this course belongs to'
+        },
+        moduleId: {
+          type: 'number',
+          example: 1,
+          description: 'ID of the module this course belongs to'
+        },
+        name: {
+          type: 'string',
+          example: 'Advanced Web Development',
+          description: 'Name of the course'
+        },
+        description: {
+          type: 'string',
+          example: 'Learn advanced web development concepts and best practices',
+          description: 'Detailed description of the course'
+        },
+        targetAudience: {
+          type: 'string',
+          example: 'Intermediate web developers',
+          description: 'Intended audience for this course',
+        },
+        prerequisites: {
+          type: 'string',
+          example: 'Basic knowledge of HTML, CSS, and JavaScript',
+          description: 'Prerequisites for taking this course',
+        },
+        whatYouWillLearn: {
+          type: 'string',
+          example: 'Advanced React patterns, Performance optimization, State management',
+          description: 'Key learning outcomes',
+        },
+        whatYouCanDoAfter: {
+          type: 'string',
+          example: 'Build complex web applications, Optimize performance, Implement best practices',
+          description: 'Skills gained after completing the course',
+        },
+        minAge: {
+          type: 'number',
+          example: 16,
+          description: 'Minimum age requirement',
+        },
+        maxAge: {
+          type: 'number',
+          example: 99,
+          description: 'Maximum age limit',
+        },
+        price: {
+          type: 'number',
+          example: 99.99,
+          description: 'Course price',
+        },
+        chapters: {
+          type: 'string',
+          description: 'JSON string of chapters array',
+          example: JSON.stringify([{
+            name: 'Introduction',
+            description: 'Course overview',
+            order: 1
+          }])
         }
-      ]
+      }
     }
   })
   @UseInterceptors(
@@ -131,7 +127,7 @@ export class CourseController {
   )
   async create(
     @Body() dto: any,
-    @UploadedFile() file?: Express.Multer.File
+    @UploadedFile() file?
   ) {
     let courseData = dto;
     
