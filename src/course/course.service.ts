@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCourseDto } from './dto';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class CourseService {
@@ -138,5 +139,92 @@ export class CourseService {
         );
 
         return hasPendingRequest ? 'Pending' : 'Not Enrolled';
+    }
+
+    async deleteCourse(courseId: number): Promise<void> {
+        // First, check if the course exists
+        const course = await this.prisma.course.findUnique({
+            where: { id: courseId },
+            include: {
+                chapters: {
+                    include: {
+                        sections: true,
+                        seances: true
+                    }
+                },
+                groups: true
+            }
+        });
+
+        if (!course) {
+            throw new NotFoundException(`Course with ID ${courseId} not found`);
+        }
+
+        // Use a transaction to ensure all deletes succeed or fail together
+        await this.prisma.$transaction(async (prisma) => {
+            // Delete all related entities in the correct order
+            
+            // 1. Delete supports from sections
+            await prisma.support.deleteMany({
+                where: {
+                    section: {
+                        chapter: {
+                            courseId: courseId
+                        }
+                    }
+                }
+            });
+
+            // 2. Delete sections from chapters
+            await prisma.section.deleteMany({
+                where: {
+                    chapter: {
+                        courseId: courseId
+                    }
+                }
+            });
+
+            // 3. Delete seances from chapters
+            await prisma.seance.deleteMany({
+                where: {
+                    chapter: {
+                        courseId: courseId
+                    }
+                }
+            });
+
+            // 4. Delete chapters
+            await prisma.chapter.deleteMany({
+                where: { courseId: courseId }
+            });
+
+            // 5. Delete enrollment requests for groups in this course
+            await prisma.enrollmentRequest.deleteMany({
+                where: {
+                    group: {
+                        courseId: courseId
+                    }
+                }
+            });
+
+            // 6. Delete user groups for groups in this course
+            await prisma.userGroup.deleteMany({
+                where: {
+                    group: {
+                        courseId: courseId
+                    }
+                }
+            });
+
+            // 7. Delete groups
+            await prisma.group.deleteMany({
+                where: { courseId: courseId }
+            });
+
+            // 8. Finally, delete the course
+            await prisma.course.delete({
+                where: { id: courseId }
+            });
+        });
     }
 }

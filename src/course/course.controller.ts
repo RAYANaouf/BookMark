@@ -13,6 +13,7 @@ import { getUserIdFromRequest } from 'src/utils/getUserIdFromRequest';
 import { BadRequestException } from '@nestjs/common';
 import { ParseIntPipe } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common';
+import { Delete } from '@nestjs/common';
 
 @ApiTags('courses')
 @Controller('course')
@@ -282,5 +283,45 @@ export class CourseController {
       throw new NotFoundException('Course not found');
     }
     return course;
+  }
+
+  @Delete(':id')
+  @ApiOperation({ 
+    summary: 'Delete a course',
+    description: 'Deletes a course and all its related data including chapters, sections, and groups.'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the course to delete',
+    type: 'number',
+    required: true,
+    example: 1
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Course deleted successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Course deleted successfully' }
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Course not found',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 404 },
+        message: { type: 'string', example: 'Course with ID 999 not found' },
+        error: { type: 'string', example: 'Not Found' }
+      }
+    }
+  })
+  @HttpCode(HttpStatus.OK)
+  async deleteCourse(@Param('id', ParseIntPipe) id: number) {
+    await this.courseService.deleteCourse(id);
+    return { message: 'Course deleted successfully' };
   }
 }
