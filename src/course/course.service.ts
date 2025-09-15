@@ -160,7 +160,7 @@ export class CourseService {
                     include: {
                         exams: {
                             include: {
-                                grades: true
+                                grade: true
                             }
                         }
                     }
