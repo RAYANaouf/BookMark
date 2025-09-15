@@ -156,7 +156,15 @@ export class CourseService {
                         }
                     }
                 },
-                groups: true
+                groups: {
+                    include: {
+                        exams: {
+                            include: {
+                                grades: true
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -177,7 +185,27 @@ export class CourseService {
                 }
             });
 
-            // 2. Delete supports from sections
+            // 2. Delete exam grades for exams in this course's groups
+            await prisma.examGrad.deleteMany({
+                where: {
+                    exam: {
+                        group: {
+                            courseId: courseId
+                        }
+                    }
+                }
+            });
+
+            // 3. Delete exams in this course's groups
+            await prisma.exam.deleteMany({
+                where: {
+                    group: {
+                        courseId: courseId
+                    }
+                }
+            });
+
+            // 4. Delete supports from sections
             await prisma.support.deleteMany({
                 where: {
                     section: {
@@ -188,7 +216,7 @@ export class CourseService {
                 }
             });
 
-            // 3. Delete sections from chapters
+            // 5. Delete sections from chapters
             await prisma.section.deleteMany({
                 where: {
                     chapter: {
@@ -197,7 +225,7 @@ export class CourseService {
                 }
             });
 
-            // 4. Now it's safe to delete seances
+            // 6. Now it's safe to delete seances
             await prisma.seance.deleteMany({
                 where: {
                     chapter: {
@@ -206,12 +234,12 @@ export class CourseService {
                 }
             });
 
-            // 5. Delete chapters
+            // 7. Delete chapters
             await prisma.chapter.deleteMany({
                 where: { courseId: courseId }
             });
 
-            // 6. Delete enrollment requests for groups in this course
+            // 8. Delete enrollment requests for groups in this course
             await prisma.enrollmentRequest.deleteMany({
                 where: {
                     group: {
@@ -220,7 +248,7 @@ export class CourseService {
                 }
             });
 
-            // 7. Delete user groups for groups in this course
+            // 9. Delete user groups for groups in this course
             await prisma.userGroup.deleteMany({
                 where: {
                     group: {
@@ -229,12 +257,12 @@ export class CourseService {
                 }
             });
 
-            // 8. Delete groups
+            // 10. Delete groups
             await prisma.group.deleteMany({
                 where: { courseId: courseId }
             });
 
-            // 9. Finally, delete the course
+            // 11. Finally, delete the course
             await prisma.course.delete({
                 where: { id: courseId }
             });
