@@ -126,15 +126,15 @@ export class UserService {
 
         // Process pending enrollments
         const pendingEnrollments = user.enrollmentRequests
-            .filter(req => req.status === 'Pending')
-            .map(req => ({
-                courseId: req.courses.id,
-                courseName: req.courses.name,
-                academyId: req.courses.academy.id,
-                academyName: req.courses.academy.name,
-                status: req.status,
-                requestedAt: req.createdAt
-            }));
+    .filter(req => req.status === 'Pending')
+    .map(req => ({
+        courseId: req.group.course?.id,
+        courseName: req.group.course?.name,
+        academyId: req.group.course?.academyId,
+        academyName: req.group.course?.academyId,
+        status: req.status,
+        requestedAt: req.createdAt
+    }));
 
         // Remove sensitive data and restructure the response
         const { ...userData } = user;
