@@ -268,4 +268,35 @@ export class CourseService {
             });
         });
     }
+
+    async getCoursesByModule(moduleId: number) {
+        // Check if module exists
+        const module = await this.prisma.module.findUnique({
+            where: { id: moduleId },
+        });
+
+        if (!module) {
+            throw new NotFoundException(`Module with ID ${moduleId} not found`);
+        }
+
+        return this.prisma.course.findMany({
+            where: {
+                moduleId,
+                enabled: true // Only return enabled courses
+            },
+            include: {
+                module: true,
+                academy: true,
+                _count: {
+                    select: {
+                        chapters: true,
+                        groups: true
+                    }
+                }
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });
+    }
 }

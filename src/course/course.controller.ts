@@ -198,6 +198,15 @@ export class CourseController {
     return this.courseService.findByAcademy(Number(academyId));
   }
 
+  @Get('module/:moduleId')
+  @ApiOperation({ summary: 'Get all courses by module ID' })
+  @ApiParam({ name: 'moduleId', description: 'ID of the module' })
+  @ApiResponse({ status: 200, description: 'Returns all courses for the specified module' })
+  @ApiResponse({ status: 404, description: 'Module not found' })
+  async getCoursesByModule(@Param('moduleId', ParseIntPipe) moduleId: number) {
+    return this.courseService.getCoursesByModule(moduleId);
+  }
+
   @Get(':id')
   @ApiOperation({ 
     summary: 'Get course details by ID',
