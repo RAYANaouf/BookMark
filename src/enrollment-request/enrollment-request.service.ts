@@ -95,7 +95,7 @@ export class EnrollmentRequestService {
         );
       }
 
-      if (request.status !== 'PENDING') {
+      if (request.status !== 'Pending') {
         throw new HttpException(
           'This request has already been processed',
           HttpStatus.BAD_REQUEST,
