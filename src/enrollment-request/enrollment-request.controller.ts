@@ -32,10 +32,7 @@ export class EnrollmentRequestController {
     @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
     @Get('group/:groupId')
-    @ApiResponse({ status: 200, description: 'Returns enrollment requests for the specified group' })
-    async getByGroupId(
-        @Param('groupId', ParseIntPipe) groupId: number
-    ) {
+    async getByGroupId(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.enrollmentRequestService.getRequestsForGroup(groupId);
     }
 
