@@ -33,14 +33,6 @@ export class EnrollmentRequestController {
     @UseGuards(JwtGuard)
     @Get('group/:groupId')
     @ApiResponse({ status: 200, description: 'Returns enrollment requests for the specified group' })
-    @ApiBody({
-        schema : {
-            type : 'object',
-            properties : {
-                groupId : { type : 'number' }
-            }
-        }
-    })
     async getByGroupId(
         @Param('groupId', ParseIntPipe) groupId: number
     ) {
