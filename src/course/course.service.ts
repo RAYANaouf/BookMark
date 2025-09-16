@@ -281,8 +281,7 @@ export class CourseService {
 
         return this.prisma.course.findMany({
             where: {
-                moduleId,
-                enabled: true // Only return enabled courses
+                moduleId
             },
             include: {
                 module: true,
