@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Que
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('enrollment-request')
 export class EnrollmentRequestController {
@@ -22,12 +22,29 @@ export class EnrollmentRequestController {
         return this.enrollmentRequestService.create(dto);
     }
 
-
     @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
     @Get('user/:userId')
     async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
         return this.enrollmentRequestService.getRequestsByUser(userId);
+    }
+
+    @ApiBearerAuth('JWT-auth')
+    @UseGuards(JwtGuard)
+    @Get('group/:groupId')
+    @ApiResponse({ status: 200, description: 'Returns enrollment requests for the specified group' })
+    @ApiBody({
+        schema : {
+            type : 'object',
+            properties : {
+                groupId : { type : 'number' }
+            }
+        }
+    })
+    async getByGroupId(
+        @Param('groupId', ParseIntPipe) groupId: number
+    ) {
+        return this.enrollmentRequestService.getRequestsForGroup(groupId);
     }
 
     @ApiBearerAuth('JWT-auth')
