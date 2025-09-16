@@ -1,8 +1,8 @@
-import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
-import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('enrollment-request')
 export class EnrollmentRequestController {
@@ -34,6 +34,17 @@ export class EnrollmentRequestController {
     @Get('group/:groupId')
     async getByGroupId(@Param('groupId', ParseIntPipe) groupId: number) {
         return this.enrollmentRequestService.getRequestsForGroup(groupId);
+    }
+
+    @ApiBearerAuth('JWT-auth')
+    @UseGuards(JwtGuard)
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Delete an enrollment request' })
+    @ApiResponse({ status: 204, description: 'Enrollment request deleted successfully' })
+    @ApiResponse({ status: 404, description: 'Enrollment request not found' })
+    async deleteRequest(@Param('id', ParseIntPipe) id: number) {
+        await this.enrollmentRequestService.deleteRequest(id);
     }
 
     @ApiBearerAuth('JWT-auth')
