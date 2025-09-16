@@ -16,9 +16,9 @@ export class EnrollmentRequestController {
 
     @ApiBearerAuth('JWT-auth')
     @UseGuards(JwtGuard)
-    @Get('course/:courseId')
-    async getByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
-        return this.enrollmentRequestService.getRequestsByUser(courseId);
+    @Get('user/:userId')
+    async getByUserId(@Param('userId', ParseIntPipe) userId: number) {
+        return this.enrollmentRequestService.getRequestsByUser(userId);
     }
 
     @ApiBearerAuth('JWT-auth')

@@ -145,11 +145,10 @@ export class EnrollmentRequestService {
     });
   }
 
-  async getRequestsByUser(userId: number, status?: string) {
+  async getRequestsByUser(userId: number) {
     return this.prisma.enrollmentRequest.findMany({
       where: {
         userId,
-        ...(status && { status }),
       },
       include: {
         group: {
