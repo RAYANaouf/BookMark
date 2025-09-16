@@ -47,7 +47,7 @@ export class EnrollmentRequestService {
         data: {
           userId: dto.userId,
           groupId: dto.groupId,
-          status: 'PENDING',
+          status: 'Pending',
         },
         include: {
           user: true,

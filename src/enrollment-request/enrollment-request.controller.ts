@@ -2,13 +2,22 @@ import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Que
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @Controller('enrollment-request')
 export class EnrollmentRequestController {
     constructor(private readonly enrollmentRequestService: EnrollmentRequestService) {}
 
     @Post('create')
+    @ApiBody({
+        schema : {
+            type : 'object',
+            properties : {
+                userId : { type : 'number' },
+                groupId : { type : 'number' }
+            }
+        }
+    })
     async create(@Body() dto: CreateEnrollmentRequestDto) {
         return this.enrollmentRequestService.create(dto);
     }
