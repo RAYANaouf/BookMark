@@ -218,4 +218,57 @@ export class GroupService {
       orderBy: { name: 'asc' }, // Order groups by name
     });
   }
+
+
+
+  async getGroupProgress(groupId: number) {
+    // 1. Get group with its course and seances
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+      include: {
+        course: {
+          include: {
+            chapters: true
+          }
+        },
+        seances: {
+          where: {
+            chapterId: { not: null }, // Only include seances with chapters
+            endsAt: { lte: new Date() } // Only include completed seances
+          },
+          distinct: ['chapterId'], // Count each chapter only once
+          select: {
+            chapterId: true
+          }
+        }
+      }
+    });
+  
+    if (!group) {
+      throw new NotFoundException(`Group with ID ${groupId} not found`);
+    }
+    
+    if (!group.course) {
+      throw new NotFoundException(`Course not found for group with ID ${groupId}`);
+    }
+  
+    const totalChapters = group.course.chapters.length;
+    const completedChapters = group.seances.length;
+    const progressPercentage = totalChapters > 0 
+      ? Math.round((completedChapters / totalChapters) * 100)
+      : 0;
+  
+    return {
+      groupId: group.id,
+      groupName: group.name,
+      courseId: group.courseId,
+      courseName: group.course?.name || '',
+      totalChapters,
+      completedChapters,
+      progressPercentage: Math.min(100, progressPercentage), // Cap at 100%
+      nextChapter: totalChapters > completedChapters 
+        ? group.course.chapters[completedChapters]?.name || null
+        : null
+    };
+  }
 }

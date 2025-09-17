@@ -66,6 +66,30 @@ export class GroupController {
     return this.groupService.findOne(+id);
   }
 
+  @Get(':id/progress')
+  @ApiOperation({ summary: 'Get progress for a group' })
+  @ApiParam({ name: 'id', description: 'Group ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Group progress',
+    schema: {
+      example: {
+        groupId: 1,
+        groupName: 'Group A',
+        courseId: 1,
+        courseName: 'Course 101',
+        totalChapters: 10,
+        completedChapters: 4,
+        progressPercentage: 40,
+        nextChapter: 'Chapter 5'
+      }
+    }
+  })
+  @ApiResponse({ status: 404, description: 'Group or course not found' })
+  async getGroupProgress(@Param('id', ParseIntPipe) id: number) {
+    return this.groupService.getGroupProgress(id);
+  }
+
   @Post(':id/members')
   @ApiOperation({ summary: 'Add a user to a group' })
   @ApiBody({ 

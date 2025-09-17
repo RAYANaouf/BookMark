@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Patch, Param, ParseIntPipe, Get, Query, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { EnrollmentRequestService } from './enrollment-request.service';
 import { CreateEnrollmentRequestDto } from './dto';
 import { JwtGuard } from 'src/auth/guard';
