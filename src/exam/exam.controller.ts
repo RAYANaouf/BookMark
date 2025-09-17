@@ -120,10 +120,10 @@ export class ExamController {
     return this.examService.getUserGrades(userId);
   }
 
-  @Get('module-level/:moduleId')
+  @Get('module-level/:moduleId/user/:userId')
   async getModuleLevel(
     @Param('moduleId') moduleId: string,
-    @Query('userId') userId: string
+    @Param('userId') userId: string
   ) {
     return this.examService.calculateModuleLevel(
       parseInt(userId, 10),
